@@ -4,6 +4,7 @@ body {
   padding: 0px; 
   margin: 0px; 
   font-family: 'Acme', sans-serif;
+  background-color: #ffeeee
 
 }
 
@@ -113,7 +114,10 @@ body {
 .card {
   padding: 10px;
   margin-bottom: 10px; 
-  background-color: #ffe0fc;
+  background-color: #ffffff;
+  border-radius: 5px; 
+  border-top: 10px solid black; 
+  
 }
 
 .card-counter {
@@ -192,7 +196,7 @@ body {
 
 .main-panel {
   margin-top: 10px; 
-  width: 80%;
+  width: 60%;
   margin: auto; 
 }
 

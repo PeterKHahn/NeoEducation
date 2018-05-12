@@ -95,8 +95,6 @@ class FinishButton extends React.Component {
     }
 }
 
-/******8** FOrmatting ********/
-
 
 
 export default App;
