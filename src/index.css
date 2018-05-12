@@ -1,5 +1,196 @@
+
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+  padding: 0px; 
+  margin: 0px; 
+  font-family: 'Acme', sans-serif;
+
+}
+
+.text {
+  border-left: 5px solid #d81150; 
+  border-top: 0px none white; 
+  border-bottom: 0px none white; 
+
+  border-right: 0px none white; 
+  box-sizing: border-box;
+
+  color: black; 
+  cursor: text;
+
+  overflow: hidden;
+  padding: 2px 5px;
+  margin: 0; 
+  width:100%;
+  outline: none; 
+  background-color: #EEEEEE;
+  resize: none; 
+
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+  
+}
+
+.text.card-set-title {
+  font-size: 30px;
+  margin-bottom: 10px;  
+
+}
+
+.text:empty:before {
+  color: #888888;
+  content: attr(placeholder);
+  display: block; /* For Firefox */
+}
+
+.text:focus {
+  border-left: 5px solid #2f3cb8;
+  transition: .5s;
+  -o-transition:.5s;
+  -ms-transition:.5s;
+  -moz-transition:.5s;
+  -webkit-transition:.5s;
+}
+
+.term {
+  cursor: text;
+  display: inline-table;
+  position: relative;
+  word-break: break-word; 
+  padding-right: 0.75rem;
+  box-sizing: border-box; 
+  padding-top: 0.25rem;
+
+  padding-bottom: 0.25rem;
+
+
+  width: 50%;
+}
+
+.definition {
+  cursor: text;
+  display: inline-table;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+
+  position: relative;
+  word-break: break-word; 
+  padding-left: 0.75rem;
+  box-sizing: border-box; 
+
+  width: 50%; 
+
+}
+
+.card-content {
+  padding: 20px; 
+  width: 90%;
+  box-sizing: border-box; 
+  position: relative;
+  display: inline-table;
+
+
+
+}
+
+.card {
+  padding: 10px;
+  margin-bottom: 10px; 
+  background-color: #ffe0fc;
+  cursor: all-scroll;
+}
+
+.card-counter {
+  width: 10%; 
+  box-sizing: border-box; 
+  position: relative;
+  display: inline-table;
+
+}
+
+
+
+.card-set {
+
+
+}
+
+
+.add-row-button {
+  background-color: #dddddd; 
+  height: 50px; 
+  text-align: center; 
+  cursor: pointer; 
+
+
+}
+
+.finish-button {
+  background-color: #dddddd; 
+  height: 50px; 
+  text-align: center; 
+  cursor: pointer; 
+  margin-top: 10px; 
+  display: block; 
+  color: black; 
+  text-decoration: none; 
+  
+}
+
+.finish-button:visited {
+  color: black;
+}
+
+/************** Header CSS *********************/
+
+.header-bar {
+  background-color: #ffe0fc;
+  width: 100%; 
+}
+
+.heading {
+  background-color: #d81150
+}
+
+.title-bar {
+  padding:10px; 
+}
+
+.header-button {
+  display: inline-block; 
+  padding : 10px; 
+
+}
+.header-button:hover {
+  background-color: #DDDDEE; 
+  transition: .5s;
+  -o-transition:.5s;
+  -ms-transition:.5s;
+  -moz-transition:.5s;
+  -webkit-transition:.5s;
+  }
+.search-bar {
+  display : inline-block; 
+  
+}
+
+.main-panel {
+  margin-top: 10px; 
+  width: 80%;
+  margin: auto; 
+}
+
+.title {
+  font-size: 30px; 
+  color: white; 
+}
+.subtitle {
+  color: white; 
+}
+
+/********************   Formatting ********************/
+
+.card-set-info-box {
+  padding: 20px 0px; 
 }
