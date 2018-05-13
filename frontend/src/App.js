@@ -4,22 +4,36 @@ import './App.css';
 import Header from './header/Header.jsx'
 import CardSet from './card/Card.jsx'
 
+import {Switch, Route, BrowserRouter} from 'react-router-dom'
+
 class App extends Component {
   render() {
     return (
       <div>
-          <Header/>
-          <WorkPanel/>
+          <Switch>
+            <Route exact path='/' component={FrontPage}/>
+            <Route exact path='/weird' component={Header}/>
+          </Switch>
       </div>
     );
   }
 }
 
+class FrontPage extends Component {
+  render() {
+    return(
+      <div>
+        <Header/>
+        <WorkPanel/>
+      </div>
+    )
+  }
+}
 
 
 /********************* Flash Card Classes **********/
 
-class WorkPanel extends React.Component {
+class WorkPanel extends Component {
     constructor(props) {
         super(props)
 
@@ -30,8 +44,6 @@ class WorkPanel extends React.Component {
     }
     addCard() {
         this.cardSetRef.current.addCard()
-
-
 
     }
     
@@ -81,15 +93,20 @@ class FinishButton extends React.Component {
     constructor(props) {
         super(props)
         this.handleClick = this.handleClick.bind(this)
+
     }
     handleClick(event) {
-        window.open("/done")
+        console.log('heyo')
+
         
     }
     render() {
         return(
-            <a className="finish-button" href="/done">
-                Click here to finish
+            <a 
+              className="finish-button" 
+              onClick={this.handleClick} 
+              href='/weird'>
+                Done
             </a>
         )
     }

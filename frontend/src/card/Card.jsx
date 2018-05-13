@@ -51,7 +51,7 @@ class CardSetInfo extends Component {
         return(
             <div className='cardset-info'>
 
-                <TextareaAutosize className='text-area' placeholder='Title your Flash Set'/>
+                <TextareaAutosize className='text-area card-set-title' placeholder='Title your Flash Set'/>
                 <TextareaAutosize className='text-area' placeholder='Subject...'/>
 
             </div>
