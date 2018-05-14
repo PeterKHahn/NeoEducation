@@ -41,6 +41,20 @@ class HeaderBar extends Component {
         console.log('Name: ' + profile.getName());
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+        var bodyJson = response.getAuthResponse().id_token
+        console.log(bodyJson)
+        fetch("/authenticate", {
+            method : 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+          
+            body : bodyJson
+        }).then(results => {
+            console.log(results)
+        })
     }
     onFailure(response) {
         console.log('failure :(')
@@ -53,7 +67,7 @@ class HeaderBar extends Component {
                     <HeaderButton title="Flash"/>
                     <GoogleLogin
                         clientId="904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
-                        buttonText="help"
+                        buttonText="Sign in with Google"
                         onSuccess={this.onSuccess}
                         onFailure={this.onFailure}
                     />

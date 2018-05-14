@@ -1,13 +1,9 @@
 package com.neoeducation.server
 
-import freemarker.template.Configuration
 
+import com.fasterxml.jackson.core.JsonFactory
 import spark.Service.ignite
-import spark.template.freemarker.FreeMarkerEngine
-import java.io.File
-import java.io.IOException
 import com.google.api.client.googleapis.auth.oauth2.*
-import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import spark.Request
@@ -22,10 +18,10 @@ class Server{
         val http = ignite()
 
 
-        http.get("/testAuth") { request: Request, response: Response ->
-            val qm = request.queryMap()
+        http.post("/authenticate") { request: Request, response: Response ->
 
-            val idTokenString = qm.value("idToken")
+            val idTokenString = request.body()
+ 
             if(verifyId(idTokenString)) {
                 // we have verified the ID, it is time to do action
                 println("VERIFIED")

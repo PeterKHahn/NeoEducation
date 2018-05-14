@@ -53,7 +53,6 @@ class WorkPanel extends Component {
                     <CardSet ref={this.cardSetRef}/>
                     <AddRowButton cardFunction={this.addCard}/>
                     <FinishButton/>
-                    <TestButton/>
                 </div>
     }
 }
@@ -98,11 +97,11 @@ class FinishButton extends Component {
     }
     handleClick(event) {
         console.log('heyo')
-        fetch("/testAuth", {
-            method: 'post', 
-            body: 'hello'
-        })
-            .then(res => console.log(res))
+        fetch('/cardset ')
+            .then(results => {
+                console.log(results)
+            })
+
 
         
     }
@@ -118,24 +117,6 @@ class FinishButton extends Component {
     }
 }
 
-class TestButton extends Component {
-
-    constructor(props) {
-        super(props)
-        this.handleClickz = this.handleClickz.bind(this)
-    }
-
-    handleClickz(event) {
-        console.log("handling the click")
-        fetch("/testCookie")
-            .then(res => console.log(res))
-    }
-    render() {
-        return(
-            <p onClick={this.handleClickz}>Click here to test smthn</p>
-        )
-    }
-}
 
 
 

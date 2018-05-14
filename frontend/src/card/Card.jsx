@@ -36,7 +36,6 @@ class CardSet extends React.Component {
                     />
         })
 
-        console.log(res)
 
         return  <div className='card-set'>
                     <CardSetInfoBox/>
@@ -52,8 +51,8 @@ class CardSetInfo extends Component {
         return(
             <div className='cardset-info'>
 
-                <TextareaAutosize className='text-area card-set-title' placeholder='Title your Flash Set'/>
-                <TextareaAutosize className='text-area' placeholder='Subject...'/>
+                <TextareaAutosize className='text-area card-set-title' tabIndex={5} placeholder='Title your Flash Set'/>
+                <TextareaAutosize className='text-area' tabIndex={5} placeholder='Subject...'/>
 
             </div>
         )

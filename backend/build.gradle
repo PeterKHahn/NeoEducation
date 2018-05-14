@@ -34,6 +34,8 @@ dependencies {
     compile "org.slf4j:slf4j-jdk14:1.7.25"
     compile "com.google.guava:guava:23.4-jre"
     compile "com.google.apis:google-api-services-oauth2:v1-rev141-1.23.0"
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
