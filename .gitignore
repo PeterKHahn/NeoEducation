@@ -1,7 +1,7 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+/frontend/node_modules
 
 # testing
 /coverage
@@ -21,4 +21,12 @@ yarn-debug.log*
 yarn-error.log*
 
 info.md
-/backend/secrets
+
+# backend
+/backend/secrets/*
+/backend/build/* 
+/backend/out/*
+/backend/.idea/*
+
+# frontend
+/frontend/node_modules/*
