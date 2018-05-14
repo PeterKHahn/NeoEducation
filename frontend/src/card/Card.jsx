@@ -8,7 +8,7 @@ class CardSet extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            cards : [<CardContent/>]
+            cards : [<CardContent key="a"/>] // TODO do something about these keys
         }
         this.addCard = this.addCard.bind(this)
        
@@ -31,6 +31,7 @@ class CardSet extends React.Component {
         let res = ls.map((currElement, index) => {
             return <Card 
                     index={index} 
+                    key="b"
                     content={currElement}
                     />
         })

@@ -23,6 +23,7 @@ class TitleBar extends React.Component {
 }
 
 
+
 class HeaderBar extends Component {
     constructor(props) {
         super(props)
@@ -51,7 +52,8 @@ class HeaderBar extends Component {
                     <HeaderButton title="About"/>
                     <HeaderButton title="Flash"/>
                     <GoogleLogin
-                        clientId="904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"   
+                        clientId="904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
+                        buttonText="help"
                         onSuccess={this.onSuccess}
                         onFailure={this.onFailure}
                     />
