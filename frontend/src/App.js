@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Header from './header/Header.jsx'
 import CardSet from './card/Card.jsx'
 
-import {Switch, Route, BrowserRouter} from 'react-router-dom'
+import {Switch, Route} from 'react-router-dom'
 
 class App extends Component {
   render() {
@@ -25,6 +24,7 @@ class FrontPage extends Component {
       <div>
         <Header/>
         <WorkPanel/>
+
       </div>
     )
   }
@@ -53,12 +53,13 @@ class WorkPanel extends Component {
                     <CardSet ref={this.cardSetRef}/>
                     <AddRowButton cardFunction={this.addCard}/>
                     <FinishButton/>
+                    <TestButton/>
                 </div>
     }
 }
 
 
-class AddRowButton extends React.Component {
+class AddRowButton extends Component {
 
     
     constructor(props) {
@@ -82,14 +83,14 @@ class AddRowButton extends React.Component {
             <div 
                 ref={this.myRef}
                 className='add-row-button'
-                tabindex='5' 
+                tabIndex='5' 
                 onFocus={this.handleSelect}>Click Here to Add a Row
             </div>
         )
     }
 }
 
-class FinishButton extends React.Component {
+class FinishButton extends Component {
     constructor(props) {
         super(props)
         this.handleClick = this.handleClick.bind(this)
@@ -97,6 +98,11 @@ class FinishButton extends React.Component {
     }
     handleClick(event) {
         console.log('heyo')
+        fetch("/testAuth", {
+            method: 'post', 
+            body: 'hello'
+        })
+            .then(res => console.log(res))
 
         
     }
@@ -108,6 +114,25 @@ class FinishButton extends React.Component {
               href='/weird'>
                 Done
             </a>
+        )
+    }
+}
+
+class TestButton extends Component {
+
+    constructor(props) {
+        super(props)
+        this.handleClickz = this.handleClickz.bind(this)
+    }
+
+    handleClickz(event) {
+        console.log("handling the click")
+        fetch("/testCookie")
+            .then(res => console.log(res))
+    }
+    render() {
+        return(
+            <p onClick={this.handleClickz}>Click here to test smthn</p>
         )
     }
 }

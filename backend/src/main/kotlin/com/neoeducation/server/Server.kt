@@ -1,38 +1,67 @@
 package com.neoeducation.server
 
-import com.google.common.collect.ImmutableMap
 import freemarker.template.Configuration
-import spark.ModelAndView
-import spark.Spark.externalStaticFileLocation
-import spark.Spark.get
+
+import spark.Service.ignite
 import spark.template.freemarker.FreeMarkerEngine
 import java.io.File
 import java.io.IOException
-
+import com.google.api.client.googleapis.auth.oauth2.*
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import spark.Request
+import spark.Response
+import java.util.*
 
 class Server{
+
+    private val CLIENT_ID = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
     fun start(){
-        externalStaticFileLocation("src/main/resources/static");
 
-        val freeMarker = createEngine()
-        get("/", {req, res ->
-            ModelAndView(ImmutableMap.of("title", "NeoEducation"), "home.ftl")
-        }, freeMarker)
+        val http = ignite()
 
-        get("/flash", {req, res ->
-            ModelAndView(ImmutableMap.of("title", "Flash : NeoEducation"), "card-maker.ftl")}, freeMarker)
+
+        http.get("/testAuth") { request: Request, response: Response ->
+            val qm = request.queryMap()
+
+            val idTokenString = qm.value("idToken")
+            if(verifyId(idTokenString)) {
+                // we have verified the ID, it is time to do action
+                println("VERIFIED")
+                "VERIFIED"
+            } else {
+                // we have failed verification, fuck off fraud
+                println("NOT VERIFIED")
+                "NOT VERIFIED"
+            }
+        }
+
+        http.get("/testCookie") {request: Request, response: Response ->
+            val cookies = request.cookies()
+            for(entry in cookies) {
+                println(entry)
+            }
+            println("GOT THE COOKIES")
+
+
+            "COOKIES"
+        }
+
+
+
+
     }
 
-    private fun createEngine(): FreeMarkerEngine {
-        val config = Configuration()
-        val templates = File("src/main/resources/spark/template/freemarker")
-        try{
-            config.setDirectoryForTemplateLoading(templates)
-        } catch (ioe: IOException){
-            println("ERROR: Directory for freemarker templates not found")
-            System.exit(1)
-        }
-        return FreeMarkerEngine(config)
+    private fun verifyId(idTokenString: String): Boolean {
+        val verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), JacksonFactory())
+                .setAudience(Collections.singletonList(CLIENT_ID))
+                .build()
+
+        val idToken = verifier.verify(idTokenString)
+        return idToken != null
+
+
     }
 
 

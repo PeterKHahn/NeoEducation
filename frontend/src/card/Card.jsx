@@ -124,7 +124,7 @@ class Definition extends React.Component {
                 <TextareaAutosize
                     className='text-area' 
                     placeholder='Definition...'
-                    tabindex={5}/>
+                    tabIndex={5}/>
             </div>
         )
     }
@@ -160,14 +160,13 @@ class Term extends React.Component {
 
 
     render() {
-        console.log(this.props)
         return(
             <div className='term'>
                 <TextareaAutosize 
                     className='text-area' 
                     innerRef = {this.testRef} 
                     placeholder='Term...'
-                    tabindex={5}/>
+                    tabIndex={5}/>
 
                 
             </div>
