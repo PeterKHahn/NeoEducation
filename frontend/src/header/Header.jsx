@@ -70,6 +70,7 @@ class HeaderBar extends Component {
                         buttonText="Sign in with Google"
                         onSuccess={this.onSuccess}
                         onFailure={this.onFailure}
+                        accessType="online"
                     />
                     <SearchBar/>
                 </div>
