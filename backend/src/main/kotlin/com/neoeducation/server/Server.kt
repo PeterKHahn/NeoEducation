@@ -36,14 +36,23 @@ class Server{
 
             val idTokenString = request.body()
 
-            if(verifyId(idTokenString)) {
+            val idToken = verifier.verify(idTokenString)
+
+            if(idToken != null) {
                 // we have verified the ID, it is time to do action
                 println("VERIFIED")
 
-                response.cookie("token", idTokenString)
+                val payload = idToken.payload
+                val email = payload.email
 
+
+                // Puts the credentials into storage, linked to the email
                 val credential = GoogleCredential().setAccessToken(idTokenString)
+                dataStorage.set(email, StoredCredential(credential))
 
+                // Sends a cookie in the response that will allow them to access their info without re-logging in
+                response.cookie("token", idTokenString)
+                
                 "VERIFIED"
             } else {
                 // we have failed verification, fuck off fraud
@@ -68,13 +77,7 @@ class Server{
 
     }
 
-    private fun verifyId(idTokenString: String): Boolean {
 
-        val idToken = verifier.verify(idTokenString)
-        return idToken != null
-
-
-    }
 
 
 }
