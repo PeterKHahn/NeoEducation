@@ -25,7 +25,7 @@ class Server{
                 .setAudience(Collections.singletonList(CLIENT_ID))
                 .build()
         dataStoreFactory = FileDataStoreFactory(File("secrets/credentials"))
-        dataStorage = dataStoreFactory.getDataStore("authentication-tokens")
+        dataStorage = dataStoreFactory.getDataStore("010101")
     }
     fun start(){
 
@@ -52,7 +52,7 @@ class Server{
 
                 // Sends a cookie in the response that will allow them to access their info without re-logging in
                 response.cookie("token", idTokenString)
-                
+
                 "VERIFIED"
             } else {
                 // we have failed verification, fuck off fraud
