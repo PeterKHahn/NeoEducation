@@ -2,28 +2,24 @@ package com.neoeducation.server
 
 
 import com.google.api.client.auth.oauth2.StoredCredential
-import spark.Service.ignite
-import com.google.api.client.googleapis.auth.oauth2.*
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
-
+import com.neoeducation.notes.CardSetReceived
 import com.neoeducation.notes.TempThing
 import com.neoeducation.server.serverdata.AuthenticationCookie
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
-import io.ktor.http.Parameters
 import io.ktor.request.receive
-import io.ktor.request.receiveParameters
 import io.ktor.request.receiveText
 import io.ktor.response.respondText
-import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -32,7 +28,7 @@ import io.ktor.sessions.*
 import java.io.File
 import java.util.*
 
-class Server{
+class Server {
 
     private val CLIENT_ID = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
     private val verifier: GoogleIdTokenVerifier
@@ -66,11 +62,11 @@ class Server{
 
             routing {
 
-                post("/authenticate"){
+                post("/authenticate") {
                     println("Got a message")
                     val authenticationCode = call.receiveText()
                     val idToken = verifier.verify(authenticationCode)
-                    if(idToken != null) {
+                    if (idToken != null) {
                         // we have verified the ID, it is time to do action
                         println("Verified")
                         val payload = idToken.payload
@@ -86,7 +82,7 @@ class Server{
                         call.respondText("Verified, authentication set", ContentType.Text.Html)
 
 
-                    }else {
+                    } else {
                         // We have failed verification, fuck off fraud
                         println("NOT VERIFIED")
                         call.respondText("Not verified", ContentType.Text.Html)
@@ -97,15 +93,14 @@ class Server{
                     println("Attempting to retrieve card set...")
 
 
-
                     val authenticationCookie = call.sessions.get<AuthenticationCookie>()
 
-                    if(authenticationCookie != null) {
+                    if (authenticationCookie != null) {
                         println("Authentication found...")
                         val token = authenticationCookie.token
 
                         val idToken = verifier.verify(token)
-                        if(idToken != null) {
+                        if (idToken != null) {
                             println("Authentication success!")
                             val payload = idToken.payload
                             val email = payload.email
@@ -119,17 +114,39 @@ class Server{
 
 
                 }
+                /**
+                 * This is not autosave, this is normal save, where we assign a new ID
+                 */
+                post("/save-card-set") {
+                    val authenticationCookie = call.sessions.get<AuthenticationCookie>()
+                    if (authenticationCookie != null) {
+                        println("Authentication found...")
+                        val token = authenticationCookie.token
+                        val idToken = verifier.verify(token)
+                        if (idToken != null) {
+                            println("Authentication success!")
+                            val payload = idToken.payload
+                            val email = payload.email
+                            val parameters = call.receive<CardSetReceived>()
+                            println(parameters)
+                            call.respondText("Success", ContentType.Text.Html)
+
+                        } else {
+                            call.respondText("Identification was incorrect", ContentType.Text.Html)
+
+                        }
+                    } else {
+                        call.respondText("Failure, identification was not sent", ContentType.Text.Html)
+
+                    }
+                }
 
 
             }
         }.start(wait = true)
 
 
-
-
     }
-
-
 
 
 }

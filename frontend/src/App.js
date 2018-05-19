@@ -48,8 +48,26 @@ class WorkPanel extends Component {
 
     }
     onFinish() {
-        console.log("oy")
-        console.log(this.cardSetRef.current.state)
+        let cardset = this.cardSetRef.current.cards
+
+        let title = this.cardSetRef.current.state.title
+        let subject = this.cardSetRef.current.state.subject
+
+        fetch("/save-card-set", {
+            method : 'POST',
+            headers: {
+                'Accept': 'text/html',
+                'Content-Type': 'application/json'
+            },
+            credentials: "include",
+            body : JSON.stringify({
+                title: title, 
+                subject: subject, 
+                cards: cardset
+            })
+        }).then(results => {
+            console.log(results)
+        })
         
     }
     

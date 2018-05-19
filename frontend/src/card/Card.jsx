@@ -6,14 +6,19 @@ class StandardCardSet extends Component {
     
     constructor(props){
         super(props)
+
+
+        this.cards = [{
+            term: "", 
+            definition: ""
+        }]
+
         this.state = {
-            cards : [{
-                term: "", 
-                definition: ""
-            }], 
+            cards : this.cards,
             title : "",
             subject: ""
         }
+
         this.addCard = this.addCard.bind(this)
 
         this.updateTitle = this.updateTitle.bind(this)
@@ -47,39 +52,31 @@ class StandardCardSet extends Component {
     }
 
     updateTerm(id, term) {
-        this.state.cards[id].term = term
-        this.setState((prevState) => {
-            return {
-                cards : prevState.cards, 
-                title: prevState.title, 
-                subject: prevState.subject
-            }
-        })
+        this.cards[id].term = term
+
     }
 
     updateDefinition(id, definition) {
 
-        this.state.cards[id].definition = definition
+        this.cards[id].definition = definition
 
-        this.setState((prevState) => {
-            return {
-                cards : prevState.cards, 
-                title: prevState.title, 
-                subject: prevState.subject
-            }
-        })
+
     }
 
     addCard() {
+        let alpha = {
+            term: "", 
+            definition: ""
+        }
+
+        this.cards.push(alpha)
+
         console.log("adding card...")
         this.setState((prevState) => {
-            let alpha = {
-                term: "", 
-                definition: ""
-            }
+
             
             return {
-                cards: prevState.cards.concat(alpha), 
+                cards: prevState.cards, 
                 title: prevState.title, 
                 subject: prevState.subject
             }
@@ -87,13 +84,14 @@ class StandardCardSet extends Component {
     }
 
     render() {
+        console.log("render")
+        console.log(this.state)
         let ls = this.state.cards;
         let res = ls.map((currElement, index) => {
             return <Card
                     key={index} 
                     id={index}
                     index={index} 
-                    content={currElement}
                     updateTerm={this.updateTerm}
                     updateDefinition={this.updateDefinition}
                     />
@@ -151,9 +149,7 @@ class Card extends Component {
             <div className="card" >
                 <CardCounter index={this.props.index}/>
                 <CardContent 
-                    term={this.props.content.term} 
                     id={this.props.id}
-                    definition={this.props.content.definition}
                     updateTerm={this.props.updateTerm}
                     updateDefinition={this.props.updateDefinition}/>
             </div>
@@ -167,12 +163,10 @@ class CardContent extends Component {
             <div className="card-content">
                 <Term
                     id={this.props.id}
-                    updateTerm={this.props.updateTerm}
-                    term={this.props.term}/>
+                    updateTerm={this.props.updateTerm}/>
                 <Definition
                     id={this.props.id}
-                    updateDefinition={this.props.updateDefinition}
-                    definition={this.props.definition}/>
+                    updateDefinition={this.props.updateDefinition}/>
             </div>
         )   
     }
@@ -200,14 +194,12 @@ class Definition extends Component {
 
     }
 
-    
     render() {
         return(
             <div className='definition'>
                 <TextareaAutosize
                     className='text-area' 
                     placeholder='Definition...'
-                    value={this.props.definition}
                     tabIndex={5}
                     onChange={this.handleChange}/>
             </div>
@@ -242,7 +234,6 @@ class Term extends React.Component {
                     className='text-area' 
                     innerRef = {this.testRef} 
                     placeholder='Term...'
-                    value={this.props.term}
                     tabIndex={5}
                     onChange={this.handleChange}/>
             </div>
