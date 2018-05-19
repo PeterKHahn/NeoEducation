@@ -42,18 +42,21 @@ class HeaderBar extends Component {
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
-        var bodyJson = response.getAuthResponse().id_token
+        var bodyJson = {
+            "authentication" : response.getAuthResponse().id_token
+        }
         console.log(bodyJson)
         fetch("/authenticate", {
             method : 'POST',
+            credentials: "include",
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Accept': 'text/html',
+                'Content-Type': 'text/html'
             },
           
-            body : bodyJson
+            body : response.getAuthResponse().id_token
         }).then(results => {
-            console.log(results)
+            console.log(results.text())
         })
     }
     onFailure(response) {

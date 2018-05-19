@@ -53,6 +53,7 @@ class WorkPanel extends Component {
                     <CardSet ref={this.cardSetRef}/>
                     <AddRowButton cardFunction={this.addCard}/>
                     <FinishButton/>
+                    <TempButton/>
                 </div>
     }
 }
@@ -113,6 +114,36 @@ class FinishButton extends Component {
               href='/weird'>
                 Done
             </a>
+        )
+    }
+}
+
+class TempButton extends Component {
+    constructor(props) {
+        super(props)
+        this.handleClick = this.handleClick.bind(this)
+    }
+    handleClick(event) {
+        fetch("/retrieve-card-set", {
+            method : 'POST',
+            headers: {
+                'Accept': 'text/html',
+                'Content-Type': 'application/json'
+            },
+            credentials: "include",
+          
+            body : JSON.stringify({
+                "id" : "bet",
+                "term" : "delta",
+                "definition" : "ca"
+            })
+        }).then(results => {
+            console.log(results)
+        })
+    }
+    render() {
+        return(
+            <div onClick={this.handleClick}>Temp</div>
         )
     }
 }
