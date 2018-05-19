@@ -9,10 +9,8 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
-import com.google.gson.Gson
-import com.neoeducation.notes.Card
-import com.neoeducation.notes.StandardCard
-import com.neoeducation.notes.TempCardConverter
+
+import com.neoeducation.notes.TempThing
 import com.neoeducation.server.serverdata.AuthenticationCookie
 import io.ktor.application.call
 import io.ktor.application.install
@@ -24,7 +22,6 @@ import io.ktor.http.Parameters
 import io.ktor.request.receive
 import io.ktor.request.receiveParameters
 import io.ktor.request.receiveText
-import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
@@ -112,7 +109,7 @@ class Server{
                             println("Authentication success!")
                             val payload = idToken.payload
                             val email = payload.email
-                            val parameters = call.receive<StandardCard>()
+                            val parameters = call.receive<TempThing>()
                             println(parameters)
 
                         }

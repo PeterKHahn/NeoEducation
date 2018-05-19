@@ -8,11 +8,22 @@ class CardSet extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            cards : [<CardContent key="a"/>] // TODO do something about these keys
+            cards : [<CardContent key="a"/>], // TODO do something about these keys
+            title : ""
         }
         this.addCard = this.addCard.bind(this)
+        this.updateTitle = this.updateTitle.bind(this)
        
        
+    }
+    updateTitle(updatedTitle) {
+
+        this.setState((prevState) => {
+            return {
+                cards: prevState.cards, 
+                title : updatedTitle
+            }
+        })
     }
 
     addCard() {
@@ -21,10 +32,12 @@ class CardSet extends React.Component {
             let alpha = <CardContent/>
             
             return {
-                cards: prevState.cards.concat(alpha)
+                cards: prevState.cards.concat(alpha), 
+                title: ""
             }
         })
     }
+
 
     render(){
         let ls = this.state.cards;
@@ -38,7 +51,8 @@ class CardSet extends React.Component {
 
 
         return  <div className='card-set'>
-                    <CardSetInfoBox/>
+                    <CardSetInfoBox
+                        titleFunction={this.updateTitle}/>
                     <div >
                         {res}
                     </div>
@@ -47,11 +61,22 @@ class CardSet extends React.Component {
 }
 
 class CardSetInfo extends Component {
+    constructor(props){
+        super(props)
+        this.onChange = this.onChange.bind(this)
+    }
+    onChange(event) {
+        this.props.titleFunction(event.target.value)
+    }
     render() {
         return(
             <div className='cardset-info'>
 
-                <TextareaAutosize className='text-area card-set-title' tabIndex={5} placeholder='Title your Flash Set'/>
+                <TextareaAutosize 
+                    className='text-area card-set-title' 
+                    tabIndex={5} 
+                    placeholder='Title your Flash Set'
+                    onChange={this.onChange}/>
                 <TextareaAutosize className='text-area' tabIndex={5} placeholder='Subject...'/>
 
             </div>
@@ -181,7 +206,8 @@ class CardSetInfoBox extends React.Component{
         return (
             <div 
                 className='card-set-info-box'>
-                <CardSetInfo/>
+                <CardSetInfo
+                    titleFunction={this.props.titleFunction}/>
             </div>
         )
     }

@@ -24,7 +24,6 @@ class FrontPage extends Component {
       <div>
         <Header/>
         <WorkPanel/>
-
       </div>
     )
   }
@@ -39,12 +38,19 @@ class WorkPanel extends Component {
 
 
         this.addCard = this.addCard.bind(this)
+        this.onFinish = this.onFinish.bind(this)
         this.cardSetRef = React.createRef();  
+        
         
     }
     addCard() {
         this.cardSetRef.current.addCard()
 
+    }
+    onFinish() {
+        console.log("oy")
+        console.log(this.cardSetRef.current.state)
+        
     }
     
 
@@ -52,8 +58,8 @@ class WorkPanel extends Component {
         return  <div className='main-panel'>
                     <CardSet ref={this.cardSetRef}/>
                     <AddRowButton cardFunction={this.addCard}/>
-                    <FinishButton/>
-                    <TempButton/>
+                    <FinishButton onClick={this.onFinish}/>
+                    
                 </div>
     }
 }
@@ -108,12 +114,12 @@ class FinishButton extends Component {
     }
     render() {
         return(
-            <a 
+            <a
               className="finish-button" 
-              onClick={this.handleClick} 
-              href='/weird'>
+              onClick={this.props.onClick}>
                 Done
             </a>
+            
         )
     }
 }
@@ -133,9 +139,14 @@ class TempButton extends Component {
             credentials: "include",
           
             body : JSON.stringify({
-                "id" : "bet",
-                "term" : "delta",
-                "definition" : "ca"
+                "id" : "my id",
+                "term" : "my term",
+                "definition" : ["definition 1", "definition 2"],
+                "obj" : {
+                    "id" : "inner id", 
+                    "term" : "inner term", 
+                    "definition" : "inner def"
+                }
             })
         }).then(results => {
             console.log(results)
