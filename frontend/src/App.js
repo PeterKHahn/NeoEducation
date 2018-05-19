@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Header from './header/Header.jsx'
-import CardSet from './card/Card.jsx'
+import StandardCardSet from './card/Card.jsx'
 
 import {Switch, Route} from 'react-router-dom'
 
@@ -56,7 +56,7 @@ class WorkPanel extends Component {
 
     render() {
         return  <div className='main-panel'>
-                    <CardSet ref={this.cardSetRef}/>
+                    <StandardCardSet ref={this.cardSetRef}/>
                     <AddRowButton cardFunction={this.addCard}/>
                     <FinishButton onClick={this.onFinish}/>
                     
