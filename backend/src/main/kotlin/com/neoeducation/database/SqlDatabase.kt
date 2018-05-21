@@ -26,28 +26,27 @@ object CardSetToCards : Table() {
     val idCard = varchar("idCard", 16) references Card.id
 }
 
+object Users : Table() {
+    val email = varchar("email", 32).primaryKey()
+    val fullName = varchar("full_name", 32)
+}
+
+object UsersToCardSet : Table() {
+    val userEmail = varchar("email", 32) references Users.email
+    val cardSetId = varchar("cardSetId", 32) references CardSet.id
+}
+
 class CardDatabase(name: String) {
     init {
 
         val url = "jdbc:sqlite:$name"
-        println("URL: $url")
-
         Database.connect(url, "org.sqlite.JDBC")
-        // Database.connect("jdbc:sqlite:/data/data.db", "org.sqlite.JDBC")
-
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
-
-
-
 
         println("Initializing Databases")
         transaction {
-            println("a")
             logger.addLogger(StdOutSqlLogger)
-            println("b")
             create(Card, CardSet, CardSetToCards)
-            println("c")
-
 
         }
 
@@ -65,10 +64,16 @@ class CardDatabase(name: String) {
         }
     }
 
-    fun insertCardSet(cardSet: CardSetData) {
+    fun insertCardSet(email: String, cardSet: CardSetData) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(CardSet, CardSetToCards)
+            create(CardSet, CardSetToCards, UsersToCardSet)
+
+            // Insert into the User to CardSet associative table
+            UsersToCardSet.insert {
+                it[userEmail] = email
+                it[cardSetId] = cardSet.id
+            }
 
             CardSet.insert {
                 it[id] = cardSet.id
@@ -100,8 +105,22 @@ class CardDatabase(name: String) {
 
     }
 
+    /**
+     * Retrieves all CardSets associated with a given email
+     */
+    fun retreiveCardSetFromUser(email: String) {
+        transaction {
+            logger.addLogger(StdOutSqlLogger)
+            create(UsersToCardSet, CardSet)
+            UsersToCardSet.innerJoin(CardSet).select {
+                UsersToCardSet.userEmail.eq(email)
+            }.forEach { println(it) }
+
+        }
+    }
+
     companion object {
-        fun cardTest() {
+        /*fun cardTest() {
             val database = CardDatabase("secrets/databases/testxdb.sqlite3")
             val cardList1 = listOf<CardData>(
                     CardData("id1", "term1", "def1"),
@@ -119,6 +138,6 @@ class CardDatabase(name: String) {
 
             database.retrieveCardSet("dataId1")
 
-        }
+        }*/
     }
 }

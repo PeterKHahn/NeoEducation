@@ -28,5 +28,11 @@ info.md
 /backend/out/*
 /backend/.idea/*
 
+/backend/secrets
+/backend/build 
+/backend/out
+/backend/.idea
+
+
 # frontend
 /frontend/node_modules/*
