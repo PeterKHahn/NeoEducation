@@ -1,15 +1,21 @@
 package com.neoeducation.main
 
-import com.neoeducation.notes.Card
-import com.neoeducation.notes.CardSet
-import com.neoeducation.notes.StandardCard
-import com.neoeducation.server.Server
+import com.neoeducation.database.CardDatabase
 
 fun main(args: Array<String>) {
     println("Hello world")
-    val card = StandardCard("id1")
 
-    Server().start()
-    println(card.definition)
+    val input = "{boy {Hello}{5}{There}{7}6yy"
+
+    val re = Regex("""\{.*?}\{.*?}""")
+    val re2 = Regex("""\{.*?}""")
+
+    val res = re2.findAll(input)
+    res.forEach { println(it.value) }
+
+    CardDatabase.cardTest()
+
+    // Start the server
+    //Server().start()
 
 }

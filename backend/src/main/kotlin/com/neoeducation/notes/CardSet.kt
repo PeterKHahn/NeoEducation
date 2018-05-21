@@ -1,45 +1,25 @@
 package com.neoeducation.notes
 
-import java.util.*
-
-class CardSet(val id: String, val owner: String, var title: String = "") {
-    private val cardCollection: MutableList<Card>
-
-    val size: Int
-        get() = cardCollection.size
-
-
-    init {
-        cardCollection = ArrayList()
-    }
-
-    fun add(card: Card) {
-        cardCollection.add(card)
-
-    }
-
-    fun add(id: String, term: String, definition: String) {
-        add(StandardCard(id, term, definition))
-    }
+class CardSet(val id: String, val owner: String, cardData: CardSetReceived) {
+    val title: String = cardData.title
+    val subject: String = cardData.subject
+    val cards: List<StandardCard> = cardData.cards.map { StandardCard("", it) }
 }
 
-class StandardCard(id: String, var term: String = "", var definition: String = "") : Card(id) {
+class StandardCard(val id: String, card: CardReceived) {
+    val term: String = card.term
+    val definition: String = card.definition
 
-    override fun toString(): String {
-        return "ID: $id TERM: $term DEF: $definition"
-    }
-}
-
-class TempThing(val id: String, val term: String, val definition: List<String>, val obj: StandardCard) {
-    override fun toString(): String {
-        return "ID: $id TERM: $term DEF: $definition OBJ: $obj"
-    }
-}
-
-sealed class Card(val id: String) {
 
 }
+
+data class CardData(val id: String, val term: String, val definition: String)
+
+data class CardSetData(val id: String, val title: String, val subject: String, val cards: List<CardData>)
 
 
 data class CardSetReceived(val title: String = "[Untitled]", val subject: String = "", val cards: List<CardReceived>)
 data class CardReceived(val term: String, val definition: String)
+
+
+//

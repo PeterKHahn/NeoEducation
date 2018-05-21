@@ -10,7 +10,6 @@ import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.neoeducation.notes.CardSetReceived
-import com.neoeducation.notes.TempThing
 import com.neoeducation.server.serverdata.AuthenticationCookie
 import io.ktor.application.call
 import io.ktor.application.install
@@ -30,14 +29,14 @@ import java.util.*
 
 class Server {
 
-    private val CLIENT_ID = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
+    private val clientId = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
     private val verifier: GoogleIdTokenVerifier
     private val dataStoreFactory: DataStoreFactory
     private val dataStorage: DataStore<StoredCredential>
 
     init {
         verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), JacksonFactory())
-                .setAudience(Collections.singletonList(CLIENT_ID))
+                .setAudience(Collections.singletonList(clientId))
                 .build()
         dataStoreFactory = FileDataStoreFactory(File("secrets/credentials"))
         dataStorage = dataStoreFactory.getDataStore("010101")
@@ -89,31 +88,7 @@ class Server {
                     }
 
                 }
-                post("/retrieve-card-set") {
-                    println("Attempting to retrieve card set...")
 
-
-                    val authenticationCookie = call.sessions.get<AuthenticationCookie>()
-
-                    if (authenticationCookie != null) {
-                        println("Authentication found...")
-                        val token = authenticationCookie.token
-
-                        val idToken = verifier.verify(token)
-                        if (idToken != null) {
-                            println("Authentication success!")
-                            val payload = idToken.payload
-                            val email = payload.email
-                            val parameters = call.receive<TempThing>()
-                            println(parameters)
-
-                        }
-
-                    }
-                    call.respondText("Hey, whatever", ContentType.Text.Html)
-
-
-                }
                 /**
                  * This is not autosave, this is normal save, where we assign a new ID
                  */
@@ -127,8 +102,8 @@ class Server {
                             println("Authentication success!")
                             val payload = idToken.payload
                             val email = payload.email
-                            val parameters = call.receive<CardSetReceived>()
-                            println(parameters)
+                            val cardSet = call.receive<CardSetReceived>()
+                            println(cardSet)
                             call.respondText("Success", ContentType.Text.Html)
 
                         } else {
@@ -145,6 +120,10 @@ class Server {
             }
         }.start(wait = true)
 
+
+    }
+
+    fun saveCardSet(cardSet: CardSetReceived) {
 
     }
 

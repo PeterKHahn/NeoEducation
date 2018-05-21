@@ -36,11 +36,9 @@ class WorkPanel extends Component {
     constructor(props) {
         super(props)
 
-
         this.addCard = this.addCard.bind(this)
         this.onFinish = this.onFinish.bind(this)
         this.cardSetRef = React.createRef();  
-        
         
     }
     addCard() {
@@ -96,9 +94,6 @@ class AddRowButton extends Component {
         node.blur()
 
         this.props.cardFunction()
-
-        
-
  
     }
 
@@ -141,43 +136,6 @@ class FinishButton extends Component {
         )
     }
 }
-
-class TempButton extends Component {
-    constructor(props) {
-        super(props)
-        this.handleClick = this.handleClick.bind(this)
-    }
-    handleClick(event) {
-        fetch("/retrieve-card-set", {
-            method : 'POST',
-            headers: {
-                'Accept': 'text/html',
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-          
-            body : JSON.stringify({
-                "id" : "my id",
-                "term" : "my term",
-                "definition" : ["definition 1", "definition 2"],
-                "obj" : {
-                    "id" : "inner id", 
-                    "term" : "inner term", 
-                    "definition" : "inner def"
-                }
-            })
-        }).then(results => {
-            console.log(results)
-        })
-    }
-    render() {
-        return(
-            <div onClick={this.handleClick}>Temp</div>
-        )
-    }
-}
-
-
 
 
 export default App;

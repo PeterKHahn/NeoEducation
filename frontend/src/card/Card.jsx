@@ -7,7 +7,6 @@ class StandardCardSet extends Component {
     constructor(props){
         super(props)
 
-
         this.cards = [{
             term: "", 
             definition: ""
@@ -26,9 +25,6 @@ class StandardCardSet extends Component {
 
         this.updateTerm = this.updateTerm.bind(this)
         this.updateDefinition = this.updateDefinition.bind(this)
-
-
-       
        
     }
     updateTitle(updatedTitle) {
@@ -53,14 +49,10 @@ class StandardCardSet extends Component {
 
     updateTerm(id, term) {
         this.cards[id].term = term
-
     }
 
     updateDefinition(id, definition) {
-
         this.cards[id].definition = definition
-
-
     }
 
     addCard() {
@@ -73,7 +65,6 @@ class StandardCardSet extends Component {
 
         console.log("adding card...")
         this.setState((prevState) => {
-
             
             return {
                 cards: prevState.cards, 
@@ -84,8 +75,6 @@ class StandardCardSet extends Component {
     }
 
     render() {
-        console.log("render")
-        console.log(this.state)
         let ls = this.state.cards;
         let res = ls.map((currElement, index) => {
             return <Card
@@ -93,8 +82,7 @@ class StandardCardSet extends Component {
                     id={index}
                     index={index} 
                     updateTerm={this.updateTerm}
-                    updateDefinition={this.updateDefinition}
-                    />
+                    updateDefinition={this.updateDefinition}/>
         })
 
 
@@ -206,24 +194,25 @@ class Definition extends Component {
         )
     }
 }
-class Term extends React.Component {
+class Term extends Component {
     constructor(props) {
         super(props)
 
         this.handleChange = this.handleChange.bind(this)
-
 
         this.childText = null; 
         this.testRef = element => {
           
             this.childText = element
             this.childText.focus()
+            
         }
 
     }
 
 
     handleChange(event) {
+        console.log(this.childText.selectionStart)
         this.props.updateTerm(this.props.id, event.target.value)
     }
 
