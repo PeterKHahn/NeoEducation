@@ -4,21 +4,50 @@ import Header from './header/Header.jsx'
 import StandardCardSet from './card/Card.jsx'
 
 import {Switch, Route} from 'react-router-dom'
+import {GoogleLogin} from 'react-google-login';
+
 
 class App extends Component {
-  render() {
-    return (
-      <div>
-          <Switch>
-            <Route exact path='/' component={FrontPage}/>
-            <Route exact path='/weird' component={Header}/>
-          </Switch>
-      </div>
-    );
-  }
+    constructor(props) {
+        super(props)
+        this.state = {
+            signedIn : false
+        }
+        console.log(document.cookie)
+    }
+
+    render() {
+        if(true) {
+            return(<MainContent/>)
+        }else {
+            return (
+                <div>
+                    <Switch>
+                        <Route exact path='/' component={CardPage}/>
+                        <Route exact path='/home' component={FrontPage}/>
+                    </Switch>
+                </div>
+            );
+        }
+        
+    }
 }
 
-class FrontPage extends Component {
+class MainContent extends Component {
+    render() {
+        return (
+            <div>
+                <Switch>
+                    <Route exact path='/home' component={CardPage}/>
+                    <Route exact path='/' component={FrontPage}/>
+                </Switch>
+            </div>
+        );
+        
+    }
+}
+
+class CardPage extends Component {
   render() {
     return(
       <div>
@@ -28,6 +57,40 @@ class FrontPage extends Component {
     )
   }
 }
+
+class FrontPage extends Component {
+    constructor(props){
+        super(props)
+        this.onSuccess = this.onSuccess.bind(this)
+        this.onFailure = this.onFailure.bind(this)
+    }
+
+    onSuccess(response) {
+        console.log("Success!")
+    }
+
+    onFailure(response) {
+        console.log("Failure!")
+    }
+
+    render() {
+        return(
+            <div>
+                <p>Welcome to NeoEducation</p>
+                <GoogleLogin
+                        clientId="904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
+                        buttonText="Sign in with Google"
+                        onSuccess={this.onSuccess}
+                        onFailure={this.onFailure}
+                        accessType="offline"
+                        uxMode="redirect"
+                        redirectUri="http://localhost:3000/home"
+                />
+            </div>
+        )
+    }
+}
+
 
 
 /********************* Flash Card Classes **********/
@@ -117,7 +180,7 @@ class FinishButton extends Component {
     }
     handleClick(event) {
         console.log('heyo')
-        fetch('/cardset ')
+        fetch('/save-card-set')
             .then(results => {
                 console.log(results)
             })

@@ -73,7 +73,9 @@ class HeaderBar extends Component {
                         buttonText="Sign in with Google"
                         onSuccess={this.onSuccess}
                         onFailure={this.onFailure}
-                        accessType="online"
+                        uxMode="redirect"
+                        redirectUri="http://localhost:3000/"
+                        accessType="offline"
                     />
                     <SearchBar/>
                 </div>

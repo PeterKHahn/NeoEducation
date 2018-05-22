@@ -21,5 +21,3 @@ data class CardSetData(val id: String, val title: String, val subject: String, v
 data class CardSetReceived(val title: String = "[Untitled]", val subject: String = "", val cards: List<CardReceived>)
 data class CardReceived(val term: String, val definition: String)
 
-
-//

@@ -11,6 +11,7 @@ import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.neoeducation.notes.CardSetReceived
 import com.neoeducation.server.serverdata.AuthenticationCookie
+import com.neoeducation.server.serverdata.CardId
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -18,6 +19,7 @@ import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.request.receive
 import io.ktor.request.receiveText
+import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.post
 import io.ktor.routing.routing
@@ -104,14 +106,16 @@ class Server {
                             val email = payload.email
                             val cardSet = call.receive<CardSetReceived>()
                             println(cardSet)
-                            call.respondText("Success", ContentType.Text.Html)
+                            call.respond(CardId(true, "a"))
+                            //call.respondText("Success", ContentType.Text.Html)
 
                         } else {
-                            call.respondText("Identification was incorrect", ContentType.Text.Html)
+                            call.respond(CardId(false, ""))
 
                         }
                     } else {
-                        call.respondText("Failure, identification was not sent", ContentType.Text.Html)
+                        call.respond(CardId(false, ""))
+                        //call.respondText("Failure, identification was not sent", ContentType.Text.Html)
 
                     }
                 }
