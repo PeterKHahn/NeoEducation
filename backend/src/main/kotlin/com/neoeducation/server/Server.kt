@@ -13,6 +13,7 @@ import com.neoeducation.database.CardDatabase
 import com.neoeducation.notes.CardData
 import com.neoeducation.notes.CardSetData
 import com.neoeducation.notes.CardSetReceived
+import com.neoeducation.notes.CardSetRequest
 import com.neoeducation.server.serverdata.AuthenticationCookie
 import com.neoeducation.server.serverdata.CardId
 import com.neoeducation.server.serverdata.LoggedInInfo
@@ -158,7 +159,7 @@ class Server {
                                 CardData(IdGenerator.generate("card"), it.term, it.definition)
                             }
                             cardDatabase.insertCardSet(email, CardSetData(id, title, subject, cards))
-                            call.respond(CardId(true, "a"))
+                            call.respond(CardId(true, id))
 
                         } else {
                             call.respond(CardId(false, ""))
@@ -166,9 +167,38 @@ class Server {
                         }
                     } else {
                         call.respond(CardId(false, ""))
-                        //call.respondText("Failure, identification was not sent", ContentType.Text.Html)
 
                     }
+                }
+
+                post("/retrieve-card-set") {
+                    val authenticationCookie = call.sessions.get<AuthenticationCookie>()
+                    if (authenticationCookie != null) {
+                        println("Authentication found...")
+                        val token = authenticationCookie.token
+                        val idToken = verifier.verify(token)
+                        if (idToken != null) {
+                            println("Authentication success!")
+
+                            val payload = idToken.payload
+                            val email = payload.email
+
+                            val request = call.receive<CardSetRequest>()
+                            val id = request.id
+                            val x = cardDatabase.retrieveCardSet(id)
+
+                            call.respond(CardId(true, id))
+
+                        } else {
+                            call.respond(CardId(false, ""))
+
+                        }
+                    } else {
+                        call.respond(CardId(false, ""))
+
+                    }
+
+
                 }
 
 

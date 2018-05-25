@@ -2,6 +2,10 @@ package com.neoeducation.database
 
 import com.neoeducation.notes.CardData
 import com.neoeducation.notes.CardSetData
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
+import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -15,14 +19,22 @@ object Card : Table() {
     val definition = text("definition")
 }
 
-object CardSet : Table() {
-    val id = varchar("id", 16).primaryKey()
+object CardSets : IntIdTable() {
     val title = varchar("title", 255)
     val subject = varchar("subject", 255)
 }
 
+class DatabaseCardSet(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<DatabaseCardSet>(CardSets)
+
+    val title by CardSets.title
+    val subject by CardSets.subject
+
+}
+
+
 object CardSetToCards : Table() {
-    val idCardSet = varchar("idCardSet", 16) references CardSet.id
+    val idCardSet = varchar("idCardSet", 16) references CardSets.id
     val idCard = varchar("idCard", 16) references Card.id
 }
 
@@ -33,7 +45,7 @@ object Users : Table() {
 
 object UsersToCardSet : Table() {
     val userEmail = varchar("email", 32) references Users.email
-    val cardSetId = varchar("cardSetId", 32) references CardSet.id
+    val cardSetId = varchar("cardSetId", 32) references CardSets.id
 }
 
 class CardDatabase(name: String) {
@@ -46,7 +58,7 @@ class CardDatabase(name: String) {
         println("Initializing Databases")
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Card, CardSet, CardSetToCards)
+            create(Card, CardSets, CardSetToCards)
 
         }
 
@@ -67,16 +79,15 @@ class CardDatabase(name: String) {
     fun insertCardSet(email: String, cardSet: CardSetData) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(CardSet, CardSetToCards, UsersToCardSet)
+            create(CardSets, CardSetToCards, UsersToCardSet)
 
-            // Insert into the User to CardSet associative table
+            // Insert into the User to CardSets associative table
             UsersToCardSet.insert {
                 it[userEmail] = email
                 it[cardSetId] = cardSet.id
             }
 
-            CardSet.insert {
-                it[id] = cardSet.id
+            CardSets.insert {
                 it[title] = cardSet.title
                 it[subject] = cardSet.subject
             }
@@ -96,9 +107,9 @@ class CardDatabase(name: String) {
     fun retrieveCardSet(id: String) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Card, CardSet, CardSetToCards)
+            create(Card, CardSets, CardSetToCards)
 
-            CardSet.innerJoin(CardSetToCards).innerJoin(Card).selectAll().forEach {
+            CardSets.innerJoin(CardSetToCards).innerJoin(Card).selectAll().forEach {
                 println(it)
             }
         }
@@ -108,36 +119,19 @@ class CardDatabase(name: String) {
     /**
      * Retrieves all CardSets associated with a given email
      */
-    fun retreiveCardSetFromUser(email: String) {
+    fun retreiveCardSetsFromUser(email: String) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(UsersToCardSet, CardSet)
-            UsersToCardSet.innerJoin(CardSet).select {
+            create(UsersToCardSet, CardSets)
+            val query = UsersToCardSet.innerJoin(CardSets).slice(CardSets.columns).select {
                 UsersToCardSet.userEmail.eq(email)
-            }.forEach { println(it) }
+            }
+            val a = DatabaseCardSet.wrapRows(query).toList()
+            a.forEach {
+                println(it)
+            }
 
         }
     }
 
-    companion object {
-        /*fun cardTest() {
-            val database = CardDatabase("secrets/databases/testxdb.sqlite3")
-            val cardList1 = listOf<CardData>(
-                    CardData("id1", "term1", "def1"),
-                    CardData("id2", "term2", "def2"),
-                    CardData("id3", "term3", "def3"))
-            val cardList2 = listOf<CardData>(
-                    CardData("id4", "term4", "def4"),
-                    CardData("id5", "term5", "def5"),
-                    CardData("id6", "term6", "def6"))
-            val cardSet1 = CardSetData("dataId1", "title1", "subject1", cardList1)
-            val cardSet2 = CardSetData("dataId2", "title2", "subject2", cardList2)
-
-            database.insertCardSet(cardSet1)
-            database.insertCardSet(cardSet2)
-
-            database.retrieveCardSet("dataId1")
-
-        }*/
-    }
 }
