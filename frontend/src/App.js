@@ -2,31 +2,89 @@ import React, { Component } from 'react';
 import './App.css';
 import Header from './header/Header.jsx'
 import StandardCardSet from './card/Card.jsx'
+import Login from './utility/Login.jsx'
 
-import {Switch, Route} from 'react-router-dom'
+
+import {Switch, Route, Redirect} from 'react-router-dom'
 import {GoogleLogin} from 'react-google-login';
 
+
+const fetchCredentials = async() => {
+    const response = await fetch("/has-credentials", {
+            method : 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'text/html'
+            },
+            credentials: "include",
+            body : "Requesting credentials"
+    })
+    const json = await response.json()
+    return json
+}
 
 class App extends Component {
     constructor(props) {
         super(props)
+
+        // console.log(document.cookie)
+
+
+        /*const response = async() => {
+
+        } 
+        fetch("/has-credentials", {
+            method : 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'text/html'
+            },
+            credentials: "include",
+            body : "Requesting credentials"
+        })*/
         this.state = {
-            signedIn : false
+            signedIn: false
         }
-        console.log(document.cookie)
+
+
     }
 
+    componentWillMount() {
+
+        // https://stackoverflow.com/questions/30929679/react-fetch-data-in-server-before-render
+
+
+        fetch("/has-credentials", {
+            method : 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'text/html'
+            },
+            credentials: "include",
+            body : "Requesting credentials"
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            this.setState({
+                signedIn: json.loggedIn
+            })
+            console.log(this.state)
+        })
+
+    }
+
+
+
     render() {
-        if(true) {
+
+        
+        if(this.state.signedIn) {
             return(<MainContent/>)
         }else {
             return (
-                <div>
-                    <Switch>
-                        <Route exact path='/' component={CardPage}/>
-                        <Route exact path='/home' component={FrontPage}/>
-                    </Switch>
-                </div>
+                <Switch>
+                    <Route exact path='/' component={FrontPage}/>
+                </Switch>
             );
         }
         
@@ -38,8 +96,7 @@ class MainContent extends Component {
         return (
             <div>
                 <Switch>
-                    <Route exact path='/home' component={CardPage}/>
-                    <Route exact path='/' component={FrontPage}/>
+                    <Route exact path='/' component={CardPage}/>
                 </Switch>
             </div>
         );
@@ -59,33 +116,15 @@ class CardPage extends Component {
 }
 
 class FrontPage extends Component {
-    constructor(props){
-        super(props)
-        this.onSuccess = this.onSuccess.bind(this)
-        this.onFailure = this.onFailure.bind(this)
-    }
 
-    onSuccess(response) {
-        console.log("Success!")
-    }
 
-    onFailure(response) {
-        console.log("Failure!")
-    }
+
 
     render() {
         return(
             <div>
                 <p>Welcome to NeoEducation</p>
-                <GoogleLogin
-                        clientId="904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
-                        buttonText="Sign in with Google"
-                        onSuccess={this.onSuccess}
-                        onFailure={this.onFailure}
-                        accessType="offline"
-                        uxMode="redirect"
-                        redirectUri="http://localhost:3000/home"
-                />
+                <Login/>
             </div>
         )
     }

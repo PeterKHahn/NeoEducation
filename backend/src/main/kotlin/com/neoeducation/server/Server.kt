@@ -12,6 +12,7 @@ import com.google.api.client.util.store.FileDataStoreFactory
 import com.neoeducation.notes.CardSetReceived
 import com.neoeducation.server.serverdata.AuthenticationCookie
 import com.neoeducation.server.serverdata.CardId
+import com.neoeducation.server.serverdata.LoggedInInfo
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -62,6 +63,43 @@ class Server {
             }
 
             routing {
+
+                post("/has-credentials") {
+                    println("Checking if client has credentials")
+                    val cookie = call.sessions.get<AuthenticationCookie>()
+                    if (cookie != null) {
+                        println("Authentication cookie found")
+
+                        val authenticationCode = cookie.token
+                        val idToken = verifier.verify(authenticationCode)
+                        if (idToken != null) {
+                            // we have verified the ID, it is time to do action
+                            println("User is verified and logged in")
+                            val payload = idToken.payload
+                            val email = payload.email
+
+                            // Puts the credentials into storage, linked to the email
+                            val credential = GoogleCredential().setAccessToken(authenticationCode)
+                            dataStorage.set(email, StoredCredential(credential))
+
+                            // Sends a cookie in the response that will allow them to access their info without re-logging in
+                            call.sessions.set(AuthenticationCookie(authenticationCode))
+
+                            call.respond(LoggedInInfo(true))
+
+
+                        } else {
+                            // We have failed verification, fuck off fraud
+                            println("Verification Failed")
+                            call.respond(LoggedInInfo(false))
+                        }
+
+                    } else {
+                        println("Authentication cookie not found")
+                        call.respond(LoggedInInfo(false))
+
+                    }
+                }
 
                 post("/authenticate") {
                     println("Got a message")
