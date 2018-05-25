@@ -9,10 +9,14 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
+import com.neoeducation.database.CardDatabase
+import com.neoeducation.notes.CardData
+import com.neoeducation.notes.CardSetData
 import com.neoeducation.notes.CardSetReceived
 import com.neoeducation.server.serverdata.AuthenticationCookie
 import com.neoeducation.server.serverdata.CardId
 import com.neoeducation.server.serverdata.LoggedInInfo
+import com.neoeducation.utility.IdGenerator
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -36,6 +40,7 @@ class Server {
     private val verifier: GoogleIdTokenVerifier
     private val dataStoreFactory: DataStoreFactory
     private val dataStorage: DataStore<StoredCredential>
+    private val cardDatabase: CardDatabase
 
     init {
         verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), JacksonFactory())
@@ -43,7 +48,9 @@ class Server {
                 .build()
         dataStoreFactory = FileDataStoreFactory(File("secrets/credentials"))
         dataStorage = dataStoreFactory.getDataStore("010101")
+        cardDatabase = CardDatabase("secrets/databases/testdb4.sqlite3")
     }
+
 
     fun start() {
 
@@ -144,8 +151,14 @@ class Server {
                             val email = payload.email
                             val cardSet = call.receive<CardSetReceived>()
                             println(cardSet)
+                            val id = IdGenerator.generate("set")
+                            val title = cardSet.title
+                            val subject = cardSet.subject
+                            val cards = cardSet.cards.map {
+                                CardData(IdGenerator.generate("card"), it.term, it.definition)
+                            }
+                            cardDatabase.insertCardSet(email, CardSetData(id, title, subject, cards))
                             call.respond(CardId(true, "a"))
-                            //call.respondText("Success", ContentType.Text.Html)
 
                         } else {
                             call.respond(CardId(false, ""))
