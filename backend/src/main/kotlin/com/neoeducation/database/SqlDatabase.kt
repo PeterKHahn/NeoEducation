@@ -130,12 +130,14 @@ class CardDatabase(name: String) {
 
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
+
+                insertCard(card)
+
                 val newCard = DatabaseCard.new {
                     term = card.term
                     definition = card.definition
                 }
 
-                insertCard(card)
                 CardSetsToCards.insert {
                     it[cardSetId] = newCardSet.id
                     it[cardId] = newCard.id
@@ -146,32 +148,27 @@ class CardDatabase(name: String) {
         }
     }
 
-    fun retrieveCardSet(id: Int) {
-        transaction {
+    fun retrieveCardSet(setId: Int): List<DatabaseCard> {
+        return transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Cards, CardSets)
+            create(Cards, CardSets, CardSetsToCards)
 
-            val cards = DatabaseCardSet.get(id).cards.toList()
-
+            val cards = DatabaseCardSet[setId].cards.toList()
+            cards
 
         }
-
     }
 
     /**
      * Retrieves all CardSets associated with a given email
      */
-    fun retreiveCardSetsFromUser(email: String) {
-        transaction {
+    fun retreiveCardSetsFromUser(email: String): List<DatabaseCardSet> {
+        return transaction {
             logger.addLogger(StdOutSqlLogger)
             create(UsersToCardSet, CardSets)
-            val query = UsersToCardSet.innerJoin(CardSets).slice(CardSets.columns).select {
-                UsersToCardSet.userEmail.eq(email)
-            }
-            val a = DatabaseCardSet.wrapRows(query).toList()
-            a.forEach {
-                println(it)
-            }
+            val cards = DatabaseUser[email].cardSets.toList()
+            cards
+
 
         }
     }
