@@ -2,26 +2,30 @@ package com.neoeducation.database
 
 import com.neoeducation.notes.CardData
 import com.neoeducation.notes.CardSetData
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 
+// https://github.com/JetBrains/Exposed/wiki/DAO
 
-object Card : Table() {
-    val id = varchar("id", 16).primaryKey()
+
+object Cards : IntIdTable() {
     val term = text("term")
     val definition = text("definition")
 }
 
+class DatabaseCard(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<DatabaseCard>(Cards)
+}
+
+
 object CardSets : IntIdTable() {
     val title = varchar("title", 255)
     val subject = varchar("subject", 255)
+
 }
 
 class DatabaseCardSet(id: EntityID<Int>) : IntEntity(id) {
@@ -30,23 +34,39 @@ class DatabaseCardSet(id: EntityID<Int>) : IntEntity(id) {
     val title by CardSets.title
     val subject by CardSets.subject
 
+    val cards by DatabaseCard via CardSetsToCards
+
 }
 
 
-object CardSetToCards : Table() {
-    val idCardSet = varchar("idCardSet", 16) references CardSets.id
-    val idCard = varchar("idCard", 16) references Card.id
+object CardSetsToCards : Table() {
+    val cardSetId = reference("id", CardSets.id)
+    val cardId = reference("id", Cards.id)
 }
 
-object Users : Table() {
-    val email = varchar("email", 32).primaryKey()
+
+object Users : IdTable<String>("email") {
+    override val id: Column<EntityID<String>>
+        get() = email
+
+    val email = varchar("email", 32).entityId()
     val fullName = varchar("full_name", 32)
 }
 
-object UsersToCardSet : Table() {
-    val userEmail = varchar("email", 32) references Users.email
-    val cardSetId = varchar("cardSetId", 32) references CardSets.id
+class DatabaseUser(id: EntityID<String>) : Entity<String>(id) {
+    companion object : EntityClass<String, DatabaseUser>(Users)
+
+    val email by Users.email
+    val fullName by Users.fullName
+
+    val cardSets by DatabaseCardSet via UsersToCardSet
 }
+
+object UsersToCardSet : Table() {
+    val userEmail = reference("email", Users.email)
+    val cardSetId = reference("cardSet", CardSets.id)
+}
+
 
 class CardDatabase(name: String) {
     init {
@@ -58,7 +78,7 @@ class CardDatabase(name: String) {
         println("Initializing Databases")
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Card, CardSets, CardSetToCards)
+            create(Cards, CardSets)
 
         }
 
@@ -67,10 +87,9 @@ class CardDatabase(name: String) {
     private fun insertCard(card: CardData) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Card)
-            Card.insert {
+            create(Cards)
+            Cards.insert {
                 it[term] = card.term
-                it[id] = card.id
                 it[definition] = card.definition
             }
         }
@@ -79,13 +98,15 @@ class CardDatabase(name: String) {
     fun insertCardSet(email: String, cardSet: CardSetData) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(CardSets, CardSetToCards, UsersToCardSet)
+            create(CardSets, CardSetsToCards, UsersToCardSet)
+
 
             // Insert into the User to CardSets associative table
             UsersToCardSet.insert {
                 it[userEmail] = email
                 it[cardSetId] = cardSet.id
             }
+
 
             CardSets.insert {
                 it[title] = cardSet.title
@@ -94,22 +115,29 @@ class CardDatabase(name: String) {
 
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
-                CardSetToCards.insert { row ->
+
+
+                /*CardSetToCards.insert { row ->
                     row[idCardSet] = cardSet.id
                     row[idCard] = card.id
                     insertCard(card)
-                }
+                }*/
             }
 
         }
     }
 
-    fun retrieveCardSet(id: String) {
+    fun retrieveCardSet(id: Int) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Card, CardSets, CardSetToCards)
+            create(Cards, CardSets)
 
-            CardSets.innerJoin(CardSetToCards).innerJoin(Card).selectAll().forEach {
+            val cardSet = DatabaseCardSet.findById(id)
+            CardSetToCards.innerJoin(Cards).slice(Cards.columns).select {
+                CardSetToCards.idCardSet.eq(id)
+            }
+
+            CardSets.innerJoin(CardSetToCards).innerJoin(Cards).selectAll().forEach {
                 println(it)
             }
         }
