@@ -19,6 +19,9 @@ object Cards : IntIdTable() {
 
 class DatabaseCard(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<DatabaseCard>(Cards)
+
+    var term by Cards.term
+    var definition by Cards.definition
 }
 
 
@@ -31,8 +34,8 @@ object CardSets : IntIdTable() {
 class DatabaseCardSet(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<DatabaseCardSet>(CardSets)
 
-    val title by CardSets.title
-    val subject by CardSets.subject
+    var title by CardSets.title
+    var subject by CardSets.subject
 
     val cards by DatabaseCard via CardSetsToCards
 
@@ -47,17 +50,17 @@ object CardSetsToCards : Table() {
 
 object Users : IdTable<String>("email") {
     override val id: Column<EntityID<String>>
-        get() = email
+        get() = email.entityId()
 
-    val email = varchar("email", 32).entityId()
+    val email = varchar("email", 32)
     val fullName = varchar("full_name", 32)
 }
 
 class DatabaseUser(id: EntityID<String>) : Entity<String>(id) {
     companion object : EntityClass<String, DatabaseUser>(Users)
 
-    val email by Users.email
-    val fullName by Users.fullName
+    var email by Users.email
+    var fullName by Users.fullName
 
     val cardSets by DatabaseCardSet via UsersToCardSet
 }
@@ -100,11 +103,23 @@ class CardDatabase(name: String) {
             logger.addLogger(StdOutSqlLogger)
             create(CardSets, CardSetsToCards, UsersToCardSet)
 
+            val newCardSet = DatabaseCardSet.new {
+                title = cardSet.title
+                subject = cardSet.subject
+
+            }
+
+            val newUser = DatabaseUser.new {
+                this.email = email
+                this.fullName = "default name"
+
+            }
+
 
             // Insert into the User to CardSets associative table
             UsersToCardSet.insert {
                 it[userEmail] = email
-                it[cardSetId] = cardSet.id
+                it[cardSetId] = newCardSet.id
             }
 
 
@@ -115,13 +130,17 @@ class CardDatabase(name: String) {
 
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
+                val newCard = DatabaseCard.new {
+                    term = card.term
+                    definition = card.definition
+                }
 
+                insertCard(card)
+                CardSetsToCards.insert {
+                    it[cardSetId] = newCardSet.id
+                    it[cardId] = newCard.id
 
-                /*CardSetToCards.insert { row ->
-                    row[idCardSet] = cardSet.id
-                    row[idCard] = card.id
-                    insertCard(card)
-                }*/
+                }
             }
 
         }
@@ -132,14 +151,9 @@ class CardDatabase(name: String) {
             logger.addLogger(StdOutSqlLogger)
             create(Cards, CardSets)
 
-            val cardSet = DatabaseCardSet.findById(id)
-            CardSetToCards.innerJoin(Cards).slice(Cards.columns).select {
-                CardSetToCards.idCardSet.eq(id)
-            }
+            val cards = DatabaseCardSet.get(id).cards.toList()
 
-            CardSets.innerJoin(CardSetToCards).innerJoin(Cards).selectAll().forEach {
-                println(it)
-            }
+
         }
 
     }
