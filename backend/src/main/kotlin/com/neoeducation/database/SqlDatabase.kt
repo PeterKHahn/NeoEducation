@@ -1,9 +1,6 @@
 package com.neoeducation.database
 
-import com.neoeducation.notes.CardData
-import com.neoeducation.notes.CardReceived
-import com.neoeducation.notes.CardSetInfo
-import com.neoeducation.notes.CardSetReceived
+import com.neoeducation.notes.*
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.*
@@ -125,7 +122,7 @@ class CardDatabase(name: String) {
 
     }
 
-    fun retrieveCardSet(setId: Int, email: String): List<CardData> {
+    fun retrieveCardSet(setId: Int, email: String): CardSetData {
         return transaction {
             logger.addLogger(StdOutSqlLogger)
 
@@ -140,7 +137,7 @@ class CardDatabase(name: String) {
                 val cardSetRow = cardSetQuery.first()
                 if (cardSetRow[CardSetsDb.email] != email) { // This particular if statement
                     // The user does not have access to this particular Card Set
-                    emptyList()
+                    throw InvalidCredentialsException()
 
                 } else {
                     val cards = (CardSetsToCardsDb innerJoin CardsDb)
@@ -151,11 +148,13 @@ class CardDatabase(name: String) {
                                 cardData
                             }
 
-                    cards
+
+
+                    CardSetData(setId, cardSetRow[CardSetsDb.title], cardSetRow[CardSetsDb.subject], cards)
 
                 }
             } else {
-                emptyList()
+                throw ElementNotInDatabaseException()
             }
 
 
@@ -180,4 +179,8 @@ class CardDatabase(name: String) {
         }
     }
 
+
 }
+
+class ElementNotInDatabaseException : RuntimeException()
+class InvalidCredentialsException : RuntimeException()

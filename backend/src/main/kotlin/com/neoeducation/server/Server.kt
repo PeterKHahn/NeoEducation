@@ -179,16 +179,16 @@ class Server {
 
                             val request = call.receive<CardSetRequest>()
                             val id = request.id
-                            val resultList = cardDatabase.retrieveCardSet(id, email)
+                            val resultCardSet = cardDatabase.retrieveCardSet(id, email)
 
-                            call.respond(true) // TODO fix these responses
+                            call.respond(ApiResponse(true, RetrieveCardSetResponse(resultCardSet))) // TODO fix these responses
 
                         } else {
-                            call.respond(false)
+                            call.respond(ApiResponse(false, AuthenticationFailureResponse))
 
                         }
                     } else {
-                        call.respond(false)
+                        call.respond(ApiResponse(false, AuthenticationFailureResponse))
 
                     }
 

@@ -1,5 +1,7 @@
 package com.neoeducation.server.serverdata
 
+import com.neoeducation.notes.CardSetData
+
 
 open class ResponseBody(msg: String)
 
@@ -12,7 +14,7 @@ data class SaveCardSetResponse(val id: Int) : ResponseBody("")
 
 data class HasCredentialsResponse(val loggedIn: Boolean) : ResponseBody("")
 
-data class RetrieveCardSetResponse(val authSucc: String) : ResponseBody("")
+data class RetrieveCardSetResponse(val cardSet: CardSetData) : ResponseBody("")
 
 object AuthenticationFailureResponse : ResponseBody("Authentication Failed")
 
