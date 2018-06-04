@@ -10,14 +10,9 @@ import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.neoeducation.database.CardDatabase
-import com.neoeducation.notes.CardData
-import com.neoeducation.notes.CardSetData
 import com.neoeducation.notes.CardSetReceived
 import com.neoeducation.notes.CardSetRequest
-import com.neoeducation.server.serverdata.AuthenticationCookie
-import com.neoeducation.server.serverdata.CardId
-import com.neoeducation.server.serverdata.LoggedInInfo
-import com.neoeducation.utility.IdGenerator
+import com.neoeducation.server.serverdata.*
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -93,18 +88,18 @@ class Server {
                             // Sends a cookie in the response that will allow them to access their info without re-logging in
                             call.sessions.set(AuthenticationCookie(authenticationCode))
 
-                            call.respond(LoggedInInfo(true))
+                            call.respond(ApiResponse(true, HasCredentialsResponse(true)))
 
 
                         } else {
                             // We have failed verification, fuck off fraud
                             println("Verification Failed")
-                            call.respond(LoggedInInfo(false))
+                            call.respond(ApiResponse(false, HasCredentialsResponse(false)))
                         }
 
                     } else {
                         println("Authentication cookie not found")
-                        call.respond(LoggedInInfo(false))
+                        call.respond(ApiResponse(false, HasCredentialsResponse(false)))
 
                     }
                 }
@@ -137,6 +132,7 @@ class Server {
 
                 }
 
+
                 /**
                  * This is not autosave, this is normal save, where we assign a new ID
                  */
@@ -152,21 +148,19 @@ class Server {
                             val email = payload.email
                             val cardSet = call.receive<CardSetReceived>()
                             println(cardSet)
-                            val id = IdGenerator.generate("set")
+                            val cards = cardSet.cards
                             val title = cardSet.title
                             val subject = cardSet.subject
-                            val cards = cardSet.cards.map {
-                                CardData(IdGenerator.generate("card"), it.term, it.definition)
-                            }
-                            cardDatabase.insertCardSet(email, CardSetData(id, title, subject, cards))
-                            call.respond(CardId(true, id))
+
+                            val cardSetId = cardDatabase.insertCardSet(email, CardSetReceived(title, subject, cards))
+                            call.respond(ApiResponse(true, SaveCardSetResponse(cardSetId)))
 
                         } else {
-                            call.respond(CardId(false, ""))
+                            call.respond(ApiResponse(false, AuthenticationFailureResponse))
 
                         }
                     } else {
-                        call.respond(CardId(false, ""))
+                        call.respond(ApiResponse(false, AuthenticationFailureResponse))
 
                     }
                 }
@@ -185,16 +179,16 @@ class Server {
 
                             val request = call.receive<CardSetRequest>()
                             val id = request.id
-                            val x = cardDatabase.retrieveCardSet(id)
+                            val resultList = cardDatabase.retrieveCardSet(id, email)
 
-                            call.respond(CardId(true, id))
+                            call.respond(true) // TODO fix these responses
 
                         } else {
-                            call.respond(CardId(false, ""))
+                            call.respond(false)
 
                         }
                     } else {
-                        call.respond(CardId(false, ""))
+                        call.respond(false)
 
                     }
 
@@ -205,10 +199,6 @@ class Server {
             }
         }.start(wait = true)
 
-
-    }
-
-    fun saveCardSet(cardSet: CardSetReceived) {
 
     }
 

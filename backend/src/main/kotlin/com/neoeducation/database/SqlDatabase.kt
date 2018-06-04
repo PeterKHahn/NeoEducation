@@ -1,8 +1,11 @@
 package com.neoeducation.database
 
 import com.neoeducation.notes.CardData
-import com.neoeducation.notes.CardSetData
-import org.jetbrains.exposed.dao.*
+import com.neoeducation.notes.CardReceived
+import com.neoeducation.notes.CardSetInfo
+import com.neoeducation.notes.CardSetReceived
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -10,64 +13,39 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 
 // https://github.com/JetBrains/Exposed/wiki/DAO
+// https://github.com/JetBrains/Exposed/wiki/DSL
 
 
-object Cards : IntIdTable() {
+/**
+ * There may be motive to change these classes to DAOs in the future, but
+ * I'm waiting for more documentation and I want to get this working
+ */
+object CardsDb : IntIdTable() {
     val term = text("term")
     val definition = text("definition")
 }
 
-class DatabaseCard(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<DatabaseCard>(Cards)
-
-    var term by Cards.term
-    var definition by Cards.definition
-}
-
-
-object CardSets : IntIdTable() {
+object CardSetsDb : IntIdTable() {
     val title = varchar("title", 255)
     val subject = varchar("subject", 255)
+    val email = varchar("email", 255)
+}
+
+object CardSetsToCardsDb : Table() {
+    val cardSetId = entityId("cardSetId", CardSetsDb)
+    val cardId = entityId("cardId", CardsDb)
+}
+
+object UsersDb : Table() {
+    val email = varchar("email", 32).primaryKey()
+    val name = varchar("fullName", 32)
 
 }
 
-class DatabaseCardSet(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<DatabaseCardSet>(CardSets)
-
-    var title by CardSets.title
-    var subject by CardSets.subject
-
-    val cards by DatabaseCard via CardSetsToCards
-
-}
-
-
-object CardSetsToCards : Table() {
-    val cardSetId = reference("id", CardSets.id)
-    val cardId = reference("id", Cards.id)
-}
-
-
-object Users : IdTable<String>("email") {
-    override val id: Column<EntityID<String>>
-        get() = email.entityId()
-
-    val email = varchar("email", 32)
-    val fullName = varchar("full_name", 32)
-}
-
-class DatabaseUser(id: EntityID<String>) : Entity<String>(id) {
-    companion object : EntityClass<String, DatabaseUser>(Users)
-
-    var email by Users.email
-    var fullName by Users.fullName
-
-    val cardSets by DatabaseCardSet via UsersToCardSet
-}
 
 object UsersToCardSet : Table() {
-    val userEmail = reference("email", Users.email)
-    val cardSetId = reference("cardSet", CardSets.id)
+    val userEmail = varchar("email", 32) references UsersDb.email
+    val cardSetId = entityId("cardSet", CardSetsDb)
 }
 
 
@@ -81,80 +59,105 @@ class CardDatabase(name: String) {
         println("Initializing Databases")
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Cards, CardSets)
+            create(CardsDb, CardSetsDb) // TODO get all the databases initialized here
 
         }
 
     }
 
-    private fun insertCard(card: CardData) {
-        transaction {
+
+    private fun insertCard(card: CardReceived): EntityID<Int> {
+        return transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Cards)
-            Cards.insert {
+
+
+            val newId = CardsDb.insertAndGetId {
                 it[term] = card.term
                 it[definition] = card.definition
+
             }
+
+
+
+            newId
         }
+
     }
 
-    fun insertCardSet(email: String, cardSet: CardSetData) {
-        transaction {
+    /**
+     * Returns the id of the cardSet
+     */
+    fun insertCardSet(email: String, cardSet: CardSetReceived): Int {
+        return transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(CardSets, CardSetsToCards, UsersToCardSet)
 
-            val newCardSet = DatabaseCardSet.new {
-                title = cardSet.title
-                subject = cardSet.subject
-
-            }
-
-            val newUser = DatabaseUser.new {
-                this.email = email
-                this.fullName = "default name"
-
+            // Inserts the CardSet into the database
+            val newCardSetId = CardSetsDb.insertAndGetId {
+                it[title] = cardSet.title
+                it[subject] = cardSet.subject
+                it[CardSetsDb.email] = email
             }
 
 
             // Insert into the User to CardSets associative table
             UsersToCardSet.insert {
                 it[userEmail] = email
-                it[cardSetId] = newCardSet.id
+                it[cardSetId] = newCardSetId
             }
 
-
-            CardSets.insert {
-                it[title] = cardSet.title
-                it[subject] = cardSet.subject
-            }
 
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
 
-                insertCard(card)
+                val newCardId = insertCard(card)
 
-                val newCard = DatabaseCard.new {
-                    term = card.term
-                    definition = card.definition
-                }
-
-                CardSetsToCards.insert {
-                    it[cardSetId] = newCardSet.id
-                    it[cardId] = newCard.id
+                CardSetsToCardsDb.insert {
+                    it[cardSetId] = newCardSetId
+                    it[cardId] = newCardId
 
                 }
             }
 
+            newCardSetId.value
+
+
         }
+
     }
 
-    fun retrieveCardSet(setId: Int): List<DatabaseCard> {
+    fun retrieveCardSet(setId: Int, email: String): List<CardData> {
         return transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(Cards, CardSets, CardSetsToCards)
 
-            val cards = DatabaseCardSet[setId].cards.toList()
-            cards
+
+            val cardSetQuery = CardSetsDb.select {
+                CardSetsDb.id eq setId
+            }
+
+
+
+            if (!cardSetQuery.empty()) {
+                val cardSetRow = cardSetQuery.first()
+                if (cardSetRow[CardSetsDb.email] != email) { // This particular if statement
+                    // The user does not have access to this particular Card Set
+                    emptyList()
+
+                } else {
+                    val cards = (CardSetsToCardsDb innerJoin CardsDb)
+                            .select {
+                                CardSetsDb.id eq setId
+                            }.map {
+                                val cardData = CardData(it[CardsDb.id].value, it[CardsDb.term], it[CardsDb.definition])
+                                cardData
+                            }
+
+                    cards
+
+                }
+            } else {
+                emptyList()
+            }
+
 
         }
     }
@@ -162,12 +165,16 @@ class CardDatabase(name: String) {
     /**
      * Retrieves all CardSets associated with a given email
      */
-    fun retreiveCardSetsFromUser(email: String): List<DatabaseCardSet> {
+    fun retreiveCardSetsFromUser(email: String): List<CardSetInfo> {
         return transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(UsersToCardSet, CardSets)
-            val cards = DatabaseUser[email].cardSets.toList()
-            cards
+
+            val cardSets = (UsersToCardSet innerJoin CardSetsDb).select {
+                UsersToCardSet.userEmail eq email
+            }.map {
+                CardSetInfo(it[CardSetsDb.id].value, it[CardSetsDb.title], it[CardSetsDb.subject])
+            }
+            cardSets
 
 
         }

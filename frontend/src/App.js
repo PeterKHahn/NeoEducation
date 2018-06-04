@@ -6,7 +6,6 @@ import Login from './utility/Login.jsx'
 
 
 import {Switch, Route, Redirect} from 'react-router-dom'
-import {GoogleLogin} from 'react-google-login';
 
 
 const fetchCredentials = async() => {
@@ -27,32 +26,24 @@ class App extends Component {
     constructor(props) {
         super(props)
 
-        // console.log(document.cookie)
-
-
-        /*const response = async() => {
-
-        } 
-        fetch("/has-credentials", {
-            method : 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'text/html'
-            },
-            credentials: "include",
-            body : "Requesting credentials"
-        })*/
         this.state = {
             signedIn: false
         }
 
+        this.loginFunction = this.loginFunction.bind(this)
+    }
 
+    loginFunction(toggle) {
+
+        this.setState({
+            signedIn: toggle
+        })
     }
 
     componentWillMount() {
 
         // https://stackoverflow.com/questions/30929679/react-fetch-data-in-server-before-render
-
+        
 
         fetch("/has-credentials", {
             method : 'POST',
@@ -65,26 +56,19 @@ class App extends Component {
         }).then((response) => {
             return response.json()
         }).then((json) => {
-            this.setState({
-                signedIn: json.loggedIn
-            })
+            this.loginFunction(json.body.loggedIn)
             console.log(this.state)
         })
 
     }
 
-
-
     render() {
-
         
         if(this.state.signedIn) {
             return(<MainContent/>)
         }else {
             return (
-                <Switch>
-                    <Route exact path='/' component={FrontPage}/>
-                </Switch>
+                <FrontPage loginFunction={this.loginFunction}/>
             );
         }
         
@@ -118,13 +102,11 @@ class CardPage extends Component {
 class FrontPage extends Component {
 
 
-
-
     render() {
         return(
             <div>
                 <p>Welcome to NeoEducation</p>
-                <Login/>
+                <Login loginFunction={this.props.loginFunction}/>
             </div>
         )
     }
@@ -218,7 +200,6 @@ class FinishButton extends Component {
 
     }
     handleClick(event) {
-        console.log('heyo')
         fetch('/save-card-set')
             .then(results => {
                 console.log(results)

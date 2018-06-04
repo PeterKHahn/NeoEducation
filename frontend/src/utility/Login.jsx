@@ -11,14 +11,7 @@ class Login extends Component {
     }
 
     onSuccess(response) {
-        console.log('success!')
-        var profile = response.getBasicProfile()
-        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        console.log('Token: '+ response.getAuthResponse().id_token)
-
-        console.log('Name: ' + profile.getName());
-        console.log('Image URL: ' + profile.getImageUrl());
-        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        console.log('success!')       
 
         var bodyJson = {
             "authentication" : response.getAuthResponse().id_token
@@ -35,11 +28,14 @@ class Login extends Component {
             body : response.getAuthResponse().id_token
         }).then(results => {
             console.log(results.text())
+            this.props.loginFunction(true)
+
         })
     }
     onFailure(response) {
         console.log('failure :(')
         console.log(response)
+        this.props.loginFunction(false)
     }
 
     render() {

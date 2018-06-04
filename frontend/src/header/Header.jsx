@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import {GoogleLogin} from 'react-google-login';
 import Login from 'utility/Login.jsx' 
 
 const title = "NeoEducation: Flash"

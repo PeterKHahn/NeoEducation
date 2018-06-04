@@ -212,7 +212,6 @@ class Term extends Component {
 
 
     handleChange(event) {
-        console.log(this.childText.selectionStart)
         this.props.updateTerm(this.props.id, event.target.value)
     }
 
