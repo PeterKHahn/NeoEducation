@@ -29,8 +29,9 @@ object CardSetsDb : IntIdTable() {
 }
 
 object CardSetsToCardsDb : Table() {
-    val cardSetId = entityId("cardSetId", CardSetsDb)
-    val cardId = entityId("cardId", CardsDb)
+    val cardSetId = (entityId("cardSetId", CardSetsDb) references CardSetsDb.id)
+    val cardId = (entityId("cardId", CardsDb) references CardsDb.id)
+
 }
 
 object UsersDb : Table() {
@@ -40,7 +41,7 @@ object UsersDb : Table() {
 }
 
 
-object UsersToCardSet : Table() {
+object UsersToCardSetDb : Table() {
     val userEmail = varchar("email", 32) references UsersDb.email
     val cardSetId = entityId("cardSet", CardSetsDb)
 }
@@ -56,8 +57,8 @@ class CardDatabase(name: String) {
         println("Initializing Databases")
         transaction {
             logger.addLogger(StdOutSqlLogger)
-            create(CardsDb, CardSetsDb) // TODO get all the databases initialized here
-
+            create(CardsDb, CardSetsDb, UsersDb)
+            create(CardSetsToCardsDb, UsersToCardSetDb)
         }
 
     }
@@ -65,7 +66,6 @@ class CardDatabase(name: String) {
 
     private fun insertCard(card: CardReceived): EntityID<Int> {
         return transaction {
-            logger.addLogger(StdOutSqlLogger)
 
 
             val newId = CardsDb.insertAndGetId {
@@ -73,8 +73,6 @@ class CardDatabase(name: String) {
                 it[definition] = card.definition
 
             }
-
-
 
             newId
         }
@@ -86,7 +84,6 @@ class CardDatabase(name: String) {
      */
     fun insertCardSet(email: String, cardSet: CardSetReceived): Int {
         return transaction {
-            logger.addLogger(StdOutSqlLogger)
 
             // Inserts the CardSet into the database
             val newCardSetId = CardSetsDb.insertAndGetId {
@@ -97,7 +94,7 @@ class CardDatabase(name: String) {
 
 
             // Insert into the User to CardSets associative table
-            UsersToCardSet.insert {
+            UsersToCardSetDb.insert {
                 it[userEmail] = email
                 it[cardSetId] = newCardSetId
             }
@@ -123,14 +120,13 @@ class CardDatabase(name: String) {
     }
 
     fun retrieveCardSet(setId: Int, email: String): CardSetData {
+        println("retreiving card set")
         return transaction {
             logger.addLogger(StdOutSqlLogger)
-
-
+            
             val cardSetQuery = CardSetsDb.select {
                 CardSetsDb.id eq setId
             }
-
 
 
             if (!cardSetQuery.empty()) {
@@ -140,9 +136,12 @@ class CardDatabase(name: String) {
                     throw InvalidCredentialsException()
 
                 } else {
+
+                    // This is where it is throwing something bad, namely in innerJoin
                     val cards = (CardSetsToCardsDb innerJoin CardsDb)
                             .select {
-                                CardSetsDb.id eq setId
+                                CardSetsToCardsDb.cardSetId eq setId
+
                             }.map {
                                 val cardData = CardData(it[CardsDb.id].value, it[CardsDb.term], it[CardsDb.definition])
                                 cardData
@@ -166,10 +165,9 @@ class CardDatabase(name: String) {
      */
     fun retreiveCardSetsFromUser(email: String): List<CardSetInfo> {
         return transaction {
-            logger.addLogger(StdOutSqlLogger)
 
-            val cardSets = (UsersToCardSet innerJoin CardSetsDb).select {
-                UsersToCardSet.userEmail eq email
+            val cardSets = (UsersToCardSetDb innerJoin CardSetsDb).select {
+                UsersToCardSetDb.userEmail eq email
             }.map {
                 CardSetInfo(it[CardSetsDb.id].value, it[CardSetsDb.title], it[CardSetsDb.subject])
             }

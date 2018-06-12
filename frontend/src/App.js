@@ -8,19 +8,19 @@ import Login from './utility/Login.jsx'
 import {Switch, Route, Redirect} from 'react-router-dom'
 
 
-const fetchCredentials = async() => {
-    const response = await fetch("/has-credentials", {
-            method : 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'text/html'
-            },
-            credentials: "include",
-            body : "Requesting credentials"
-    })
-    const json = await response.json()
-    return json
-}
+// const fetchCredentials = async() => {
+//     const response = await fetch("/has-credentials", {
+//             method : 'POST',
+//             headers: {
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'text/html'
+//             },
+//             credentials: "include",
+//             body : "Requesting credentials"
+//     })
+//     const json = await response.json()
+//     return json
+// }
 
 class App extends Component {
     constructor(props) {
@@ -81,6 +81,8 @@ class MainContent extends Component {
             <div>
                 <Switch>
                     <Route exact path='/' component={CardPage}/>
+                    <Route path='/cardset/:id' component={CardSetPage}/>
+                    
                 </Switch>
             </div>
         );
@@ -97,6 +99,32 @@ class CardPage extends Component {
       </div>
     )
   }
+}
+
+class CardSetPage extends Component {
+
+    constructor(props) {
+        super(props)
+        let idToGet = this.props.match.params.id 
+
+        fetch("/retrieve-card-set", {
+            method : 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: "include",
+            body : JSON.stringify({
+                id : idToGet
+            })
+        }).then(results => {
+            console.log(results.json())
+        })
+
+    }
+    render() {
+        return(<h1>hello {this.props.match.params.id}</h1>)
+    }
 }
 
 class FrontPage extends Component {
@@ -138,7 +166,7 @@ class WorkPanel extends Component {
         fetch("/save-card-set", {
             method : 'POST',
             headers: {
-                'Accept': 'text/html',
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             credentials: "include",
@@ -148,7 +176,7 @@ class WorkPanel extends Component {
                 cards: cardset
             })
         }).then(results => {
-            console.log(results)
+            console.log(results.json())
         })
         
     }
@@ -196,18 +224,9 @@ class AddRowButton extends Component {
 class FinishButton extends Component {
     constructor(props) {
         super(props)
-        this.handleClick = this.handleClick.bind(this)
 
     }
-    handleClick(event) {
-        fetch('/save-card-set')
-            .then(results => {
-                console.log(results)
-            })
 
-
-        
-    }
     render() {
         return(
             <a

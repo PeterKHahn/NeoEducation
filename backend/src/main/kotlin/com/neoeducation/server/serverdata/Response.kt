@@ -17,6 +17,7 @@ data class HasCredentialsResponse(val loggedIn: Boolean) : ResponseBody("")
 data class RetrieveCardSetResponse(val cardSet: CardSetData) : ResponseBody("")
 
 object AuthenticationFailureResponse : ResponseBody("Authentication Failed")
+object InvalidCardsetResponse : ResponseBody("Not a valid card set")
 
 
 data class ApiResponse(val authSucc: Boolean, val body: ResponseBody)

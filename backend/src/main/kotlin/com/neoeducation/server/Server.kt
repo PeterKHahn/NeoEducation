@@ -10,6 +10,7 @@ import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.neoeducation.database.CardDatabase
+import com.neoeducation.database.ElementNotInDatabaseException
 import com.neoeducation.notes.CardSetReceived
 import com.neoeducation.notes.CardSetRequest
 import com.neoeducation.server.serverdata.*
@@ -179,9 +180,18 @@ class Server {
 
                             val request = call.receive<CardSetRequest>()
                             val id = request.id
-                            val resultCardSet = cardDatabase.retrieveCardSet(id, email)
+                            println("retreiving card set")
+                            try {
+                                val resultCardSet = cardDatabase.retrieveCardSet(id, email)
+                                println("card set found!")
+                                call.respond(ApiResponse(true, RetrieveCardSetResponse(resultCardSet)))
 
-                            call.respond(ApiResponse(true, RetrieveCardSetResponse(resultCardSet))) // TODO fix these responses
+
+                            } catch (e: ElementNotInDatabaseException) {
+                                println("Card set not found")
+                                call.respond(ApiResponse(false, InvalidCardsetResponse))
+                            }
+
 
                         } else {
                             call.respond(ApiResponse(false, AuthenticationFailureResponse))
