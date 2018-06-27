@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Login from 'utility/Login.jsx' 
 
 const title = "NeoEducation: Flash"
 const subtitle = "The End of something Old, the Start of something New"
@@ -31,6 +30,7 @@ class HeaderBar extends Component {
                     <HeaderButton title="Home"/>
                     <HeaderButton title="About"/>
                     <HeaderButton title="Flash"/>
+                    <SearchBar/>
                 </div>
     }
 }

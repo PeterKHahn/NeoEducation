@@ -1,26 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
-import Header from './header/Header.jsx'
-import StandardCardSet from './card/Card.jsx'
 import Login from './utility/Login.jsx'
+import CardSetViewer from './viewer/CardViewer.jsx'
+import CardPage from './pages/CardPage.jsx'
+import history from './history/History.jsx'
 
 
-import {Switch, Route, Redirect} from 'react-router-dom'
+import {Switch, Route, Router, withRouter, Link} from 'react-router-dom'
 
-
-// const fetchCredentials = async() => {
-//     const response = await fetch("/has-credentials", {
-//             method : 'POST',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Content-Type': 'text/html'
-//             },
-//             credentials: "include",
-//             body : "Requesting credentials"
-//     })
-//     const json = await response.json()
-//     return json
-// }
 
 class App extends Component {
     constructor(props) {
@@ -57,7 +44,6 @@ class App extends Component {
             return response.json()
         }).then((json) => {
             this.loginFunction(json.body.loggedIn)
-            console.log(this.state)
         })
 
     }
@@ -75,37 +61,44 @@ class App extends Component {
     }
 }
 
+
 class MainContent extends Component {
     render() {
         return (
-            <div>
+            <Router history={history}>
+                <Switch>
+                    <Route exact path="/" component = {CardPage}/>
+                    <Route exact path='/cardset/:id' component={CardSetPage}/>
+                </Switch>
+            </Router>
+            /*<div>
                 <Switch>
                     <Route exact path='/' component={CardPage}/>
                     <Route path='/cardset/:id' component={CardSetPage}/>
                     
                 </Switch>
-            </div>
+            </div>*/
         );
         
     }
 }
 
-class CardPage extends Component {
-  render() {
-    return(
-      <div>
-        <Header/>
-        <WorkPanel/>
-      </div>
-    )
-  }
-}
+
+
+
 
 class CardSetPage extends Component {
 
     constructor(props) {
         super(props)
+        console.log(this.props)
         let idToGet = this.props.match.params.id 
+
+        this.state = {
+            title: "", 
+            subject: "", 
+            cards: []
+        }
 
         fetch("/retrieve-card-set", {
             method : 'POST',
@@ -118,12 +111,39 @@ class CardSetPage extends Component {
                 id : idToGet
             })
         }).then(results => {
-            console.log(results.json())
+            return results.json()
+
+            
+        }).then(responseJson => {
+            let success = responseJson.authSucc
+            if(success) {
+                let set = responseJson.body.cardSet 
+                console.log(set)
+                
+                this.setState({
+                    title: set.title, 
+                    subject: set.subject,
+                    cards: set.cards
+                })
+            } else {
+                this.setState({
+                    title: "NO", 
+                    subject: "NOEVER", 
+                    cards: []
+                })
+            }
+
+
         })
+
 
     }
     render() {
-        return(<h1>hello {this.props.match.params.id}</h1>)
+        // this is how you get the id {this.props.match.params.id} 
+        return(<CardSetViewer
+                title={this.state.title}
+                subject={this.state.subject}
+                cards={this.state.cards}/>)
     }
 }
 
@@ -142,102 +162,6 @@ class FrontPage extends Component {
 
 
 
-/********************* Flash Card Classes **********/
-
-class WorkPanel extends Component {
-    constructor(props) {
-        super(props)
-
-        this.addCard = this.addCard.bind(this)
-        this.onFinish = this.onFinish.bind(this)
-        this.cardSetRef = React.createRef();  
-        
-    }
-    addCard() {
-        this.cardSetRef.current.addCard()
-
-    }
-    onFinish() {
-        let cardset = this.cardSetRef.current.cards
-
-        let title = this.cardSetRef.current.state.title
-        let subject = this.cardSetRef.current.state.subject
-
-        fetch("/save-card-set", {
-            method : 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-            body : JSON.stringify({
-                title: title, 
-                subject: subject, 
-                cards: cardset
-            })
-        }).then(results => {
-            console.log(results.json())
-        })
-        
-    }
-    
-
-    render() {
-        return  <div className='main-panel'>
-                    <StandardCardSet ref={this.cardSetRef}/>
-                    <AddRowButton cardFunction={this.addCard}/>
-                    <FinishButton onClick={this.onFinish}/>
-                    
-                </div>
-    }
-}
-
-
-class AddRowButton extends Component {
-
-    
-    constructor(props) {
-        super(props)
-        this.handleSelect = this.handleSelect.bind(this)
-        this.myRef = React.createRef();
-    }
-    handleSelect(event) {
-        const node = this.myRef.current
-        node.blur()
-
-        this.props.cardFunction()
- 
-    }
-
-    render() {
-        return (
-            <div 
-                ref={this.myRef}
-                className='add-row-button'
-                tabIndex='5' 
-                onFocus={this.handleSelect}>Click Here to Add a Row
-            </div>
-        )
-    }
-}
-
-class FinishButton extends Component {
-    constructor(props) {
-        super(props)
-
-    }
-
-    render() {
-        return(
-            <a
-              className="finish-button" 
-              onClick={this.props.onClick}>
-                Done
-            </a>
-            
-        )
-    }
-}
 
 
 export default App;

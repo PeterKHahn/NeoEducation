@@ -123,7 +123,7 @@ class CardDatabase(name: String) {
         println("retreiving card set")
         return transaction {
             logger.addLogger(StdOutSqlLogger)
-            
+
             val cardSetQuery = CardSetsDb.select {
                 CardSetsDb.id eq setId
             }

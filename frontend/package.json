@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "npm": "^6.1.0",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",
     "react-autosize-textarea": "^3.0.3",
     "react-dom": "^16.3.2",
     "react-google-login": "^3.2.1",
     "react-google-login-component": "^0.9.3",
-    "react-router-dom": "^4.2.2",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "styled-components": "^3.2.6"
   },
