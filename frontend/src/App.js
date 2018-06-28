@@ -91,7 +91,6 @@ class CardSetPage extends Component {
 
     constructor(props) {
         super(props)
-        console.log(this.props)
         let idToGet = this.props.match.params.id 
 
         this.state = {

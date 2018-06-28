@@ -36,7 +36,6 @@ class CardPage extends Component {
   class WorkPanel extends Component {
     constructor(props) {
         super(props)
-        console.log(props)
 
         this.addCard = this.addCard.bind(this)
         this.onFinish = this.onFinish.bind(this)
@@ -52,6 +51,7 @@ class CardPage extends Component {
 
         let title = this.cardSetRef.current.state.title
         let subject = this.cardSetRef.current.state.subject
+
 
         return fetch("/save-card-set", {
             method : 'POST',
@@ -70,8 +70,8 @@ class CardPage extends Component {
         }).then(j => {
             if(j.authSucc) {
                 let id =  j.body.id
+                console.log("sending you to a new path...")
                 this.props.history.push('/cardset/'+id)
-                console.log('hay')
 
             }else {
                 console.log("Authentication Failed")

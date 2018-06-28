@@ -204,7 +204,10 @@ class Term extends Component {
         this.testRef = element => {
           
             this.childText = element
-            this.childText.focus()
+            if(element != null) {
+                this.childText.focus()
+
+            }
             
         }
 
