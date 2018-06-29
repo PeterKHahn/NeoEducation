@@ -210,6 +210,71 @@ body {
   color: white; 
 }
 
+
+
+/******Card Set Page*********/
+
+.flash-term {
+  color: black;
+  text-align: center; 
+  width: 80%; 
+  height: 60px; 
+  margin: 0 auto; 
+  font-size: 36px; 
+
+}
+
+.flash-definition {
+  color: red;
+  background-color: white; 
+  height: 100px; 
+  font-size: 20px; 
+
+  
+}
+
+.flash-card {
+  background-color: #ffffff; 
+  margin: 10px; 
+  border-color: black; 
+  border-style: solid; 
+  border-width: 3px; 
+}
+
+.work-panel {
+  background-color: blue; 
+  height: 80vh; 
+  margin: auto;
+  padding: 10px;
+  
+}
+
+.flash-cards-panel-container {
+  width: 50%; 
+  background-color: yellow; 
+  height: 600px; 
+  float: left;
+
+  
+
+}
+
+.flash-cards-panel {
+  
+}
+
+
+
+
+.side-panel-container {
+  background-color: purple; 
+  width: 50%; 
+  height: 600px; 
+  float: left; 
+  box-sizing: border-box; 
+
+
+}
 /********************   Formatting ********************/
 
 .card-set-info-box {

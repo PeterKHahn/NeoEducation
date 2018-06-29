@@ -71,13 +71,7 @@ class MainContent extends Component {
                     <Route exact path='/cardset/:id' component={CardSetPage}/>
                 </Switch>
             </Router>
-            /*<div>
-                <Switch>
-                    <Route exact path='/' component={CardPage}/>
-                    <Route path='/cardset/:id' component={CardSetPage}/>
-                    
-                </Switch>
-            </div>*/
+
         );
         
     }

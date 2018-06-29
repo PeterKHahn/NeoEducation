@@ -5,9 +5,9 @@ class CardSetViewer extends Component {
     render() {
         let cards = this.props.cards.map((currElement, index) => {
             return(
-                <div key={index}>
-                    <div >{currElement.term}</div>
-                    <div>{currElement.definition}</div>
+                <div className="flash-card" key={index}>
+                    <div className="flash-term">{currElement.term} </div>
+                    <div className="flash-definition">{currElement.definition}</div>
                 </div>
             )
         })
@@ -15,7 +15,16 @@ class CardSetViewer extends Component {
         <div>
             <h1>{this.props.title}</h1>
             <h2>{this.props.subject}</h2>
-            <div>{cards}</div>
+            
+            <div className="work-panel">
+                <div className="flash-cards-panel-container">
+                    <div className='flash-cards-panel'>{cards}</div>
+                </div>
+                <div className="side-panel-container">
+                </div>
+
+
+            </div>
 
         </div>)
     }
