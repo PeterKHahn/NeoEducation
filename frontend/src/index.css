@@ -238,7 +238,15 @@ body {
   margin: 10px; 
   border-color: black; 
   border-style: solid; 
-  border-width: 3px; 
+  border-width: 2px; 
+}
+
+.flash-card-selected {
+  background-color: #ffffff; 
+  margin: 10px; 
+  border-color: black; 
+  border-style: solid; 
+  border-width: 5px; 
 }
 
 .work-panel {
@@ -259,11 +267,14 @@ body {
 
 }
 
-.flash-cards-panel {
-  
+
+
+
+
+.side-panel-tab-header {
+  padding: 0px; 
+  margin: 0px; 
 }
-
-
 
 
 .side-panel-container {
@@ -275,6 +286,35 @@ body {
 
 
 }
+
+
+.priority-bar {
+  margin: 10px; 
+}
+
+.selected-priority-button {
+  display: inline-block;
+  background-color: #ffffcc;
+  padding: 5px 20px 5px 20px; 
+  border-style: solid;
+  border-color: green; 
+  border-width: 1px; 
+  margin: 0px 10px 0px 0px
+
+}
+
+.deselected-priority-button {
+  display: inline-block;
+  padding: 5px 20px 5px 20px; 
+  border-style: solid;
+  border-color: blue; 
+  border-width: 1px; 
+  margin: 0px 10px 0px 0px
+
+}
+
+
+
 /********************   Formatting ********************/
 
 .card-set-info-box {

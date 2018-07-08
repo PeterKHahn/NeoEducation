@@ -45,7 +45,7 @@ class Server {
                 .build()
         dataStoreFactory = FileDataStoreFactory(File("secrets/credentials"))
         dataStorage = dataStoreFactory.getDataStore("010101")
-        cardDatabase = CardDatabase("secrets/databases/testdb4.sqlite3")
+        cardDatabase = CardDatabase("secrets/databases/cardsdb.sqlite3")
     }
 
 

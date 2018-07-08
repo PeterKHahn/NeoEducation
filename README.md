@@ -28,3 +28,38 @@ be categorized as such.
 Categorization allows us to group ideas together, generalization allows us to
 understand and study those topics at a high level, especially after categorizing and
 prioritizing the information you need to study. 
+
+
+
+
+-----------
+Redux State Structure
+----------
+GeneralState:
+    loggedIn<Boolean>: Tells us if the user is currently logged in. 
+
+CardSetInfo:
+    Title:
+    Subject: 
+    Number of Cards: 
+    Cards: Each Card has its own set of values 
+        Term: 
+        Definition: 
+
+
+-----
+Redux Actions
+-------
+LOG_IN
+LOG_OUT 
+SET_CARDS {
+    Cards<Array of Cards>
+        Priority:
+        Term: 
+        Definition:
+}
+
+UPDATE_CARD_PRIORITY {
+    index<Integer>
+    Priority: 
+}

@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import {GoogleLogin} from 'react-google-login';
+import {connect} from 'react-redux'
+
 
 class Login extends Component {
 
     constructor(props) {
         super(props)
+        console.log(this.props)
+
 
         this.onSuccess = this.onSuccess.bind(this)
         this.onFailure = this.onFailure.bind(this)
@@ -28,14 +32,18 @@ class Login extends Component {
             body : response.getAuthResponse().id_token
         }).then(results => {
             console.log(results.text())
-            this.props.loginFunction(true)
+            this.props.dispatch({
+                type: "LOG_IN"
+            })
 
         })
     }
     onFailure(response) {
         console.log('failure :(')
         console.log(response)
-        this.props.loginFunction(false)
+        this.props.dispatch({
+            type: "LOG_OUT"
+        })
     }
 
     render() {
@@ -55,4 +63,4 @@ class Login extends Component {
     }
 }
 
-export default Login; 
+export default connect()(Login); 

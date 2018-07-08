@@ -1,31 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
 import Login from './utility/Login.jsx'
-import CardSetViewer from './viewer/CardViewer.jsx'
+import CardSetPage from './pages/CardSetPage.jsx'
 import CardPage from './pages/CardPage.jsx'
 import history from './history/History.jsx'
 
 
 import {Switch, Route, Router, withRouter, Link} from 'react-router-dom'
-
+import {connect} from 'react-redux'
 
 class App extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            signedIn: false
-        }
-
-        this.loginFunction = this.loginFunction.bind(this)
-    }
-
-    loginFunction(toggle) {
-
-        this.setState({
-            signedIn: toggle
-        })
-    }
 
     componentWillMount() {
 
@@ -43,18 +27,28 @@ class App extends Component {
         }).then((response) => {
             return response.json()
         }).then((json) => {
-            this.loginFunction(json.body.loggedIn)
+            let loggedIn = json.body.loggedIn; 
+            if(loggedIn) {
+                this.props.dispatch({
+                    type: "LOG_IN"
+                })
+            }else {
+                this.props.dispatch({
+                    type: "LOG_OUT"
+                })
+            }
         })
 
     }
 
+
+
     render() {
-        
-        if(this.state.signedIn) {
-            return(<MainContent/>)
+        if(this.props.signedIn) {
+            return(<MainContentx/>)
         }else {
             return (
-                <FrontPage loginFunction={this.loginFunction}/>
+                <FrontPage/>
             );
         }
         
@@ -62,99 +56,34 @@ class App extends Component {
 }
 
 
-class MainContent extends Component {
-    render() {
-        return (
-            <Router history={history}>
-                <Switch>
-                    <Route exact path="/" component = {CardPage}/>
-                    <Route exact path='/cardset/:id' component={CardSetPage}/>
-                </Switch>
-            </Router>
 
-        );
-        
-    }
+const MainContentx = (props) => {
+    return (
+        <Router history={history}>
+            <Switch>
+                <Route exact path="/" component = {CardPage}/>
+                <Route exact path='/cardset/:id' component={CardSetPage}/>
+            </Switch>
+        </Router>
+
+    );
+    
 }
 
 
-
-
-
-class CardSetPage extends Component {
-
-    constructor(props) {
-        super(props)
-        let idToGet = this.props.match.params.id 
-
-        this.state = {
-            title: "", 
-            subject: "", 
-            cards: []
-        }
-
-        fetch("/retrieve-card-set", {
-            method : 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-            body : JSON.stringify({
-                id : idToGet
-            })
-        }).then(results => {
-            return results.json()
-
-            
-        }).then(responseJson => {
-            let success = responseJson.authSucc
-            if(success) {
-                let set = responseJson.body.cardSet 
-                console.log(set)
-                
-                this.setState({
-                    title: set.title, 
-                    subject: set.subject,
-                    cards: set.cards
-                })
-            } else {
-                this.setState({
-                    title: "NO", 
-                    subject: "NOEVER", 
-                    cards: []
-                })
-            }
-
-
-        })
-
-
-    }
-    render() {
-        // this is how you get the id {this.props.match.params.id} 
-        return(<CardSetViewer
-                title={this.state.title}
-                subject={this.state.subject}
-                cards={this.state.cards}/>)
-    }
+const FrontPage  = (props) => {
+    return(
+        <div>
+            <p>Welcome to NeoEducation</p>
+            <Login/>
+        </div>
+    )
+    
 }
 
-class FrontPage extends Component {
+const mapStateToProps = state => ({
+    signedIn: state.generalState.loggedIn
+})
 
 
-    render() {
-        return(
-            <div>
-                <p>Welcome to NeoEducation</p>
-                <Login loginFunction={this.props.loginFunction}/>
-            </div>
-        )
-    }
-}
-
-
-
-
-
-export default App;
+export default connect(mapStateToProps)(App);

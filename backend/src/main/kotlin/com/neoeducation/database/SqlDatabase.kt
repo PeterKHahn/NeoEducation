@@ -20,6 +20,7 @@ import java.sql.Connection
 object CardsDb : IntIdTable() {
     val term = text("term")
     val definition = text("definition")
+    val priority = integer("priority")
 }
 
 object CardSetsDb : IntIdTable() {
@@ -46,6 +47,7 @@ object UsersToCardSetDb : Table() {
     val cardSetId = entityId("cardSet", CardSetsDb)
 }
 
+object CardsToPriority
 
 class CardDatabase(name: String) {
     init {
@@ -71,6 +73,7 @@ class CardDatabase(name: String) {
             val newId = CardsDb.insertAndGetId {
                 it[term] = card.term
                 it[definition] = card.definition
+                it[priority] = 1
 
             }
 
@@ -143,7 +146,7 @@ class CardDatabase(name: String) {
                                 CardSetsToCardsDb.cardSetId eq setId
 
                             }.map {
-                                val cardData = CardData(it[CardsDb.id].value, it[CardsDb.term], it[CardsDb.definition])
+                                val cardData = CardData(it[CardsDb.id].value, it[CardsDb.term], it[CardsDb.definition], it[CardsDb.priority])
                                 cardData
                             }
 
