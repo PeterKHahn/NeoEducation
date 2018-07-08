@@ -3,7 +3,7 @@ import Header from 'header/Header.jsx';
 import StandardCardSet from 'card/Card.jsx';
 
 
-import {Switch, Route, Router, browserHistory, withRouter, Link} from 'react-router-dom'
+import {withRouter, Link} from 'react-router-dom'
 
 
 

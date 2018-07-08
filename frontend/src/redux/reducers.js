@@ -51,9 +51,11 @@ const cardSetReducer = (state, action) => {
             }
         case UPDATE_CARD_PRIORITY:
             let index = action.index
-            let card = action.cards[index]
+            let card = state.cards[index]
             let newCard = Object.assign({}, card, {priority: action.priority})
-            return Object.assign([...action.cards], {[index]: newCard})
+            return {
+                cards: Object.assign([...state.cards], {[index]: newCard})
+            }
 
         default: 
             return state
