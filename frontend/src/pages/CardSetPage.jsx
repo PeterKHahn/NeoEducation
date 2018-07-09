@@ -1,7 +1,10 @@
 import CardSetViewer from 'viewer/CardViewer.jsx'
+import Header from 'header/Header.jsx';
+
 import React, { Component } from 'react';
 
 import {connect} from 'react-redux';
+
 
 
 class CardSetPage extends Component {
@@ -59,10 +62,14 @@ class CardSetPage extends Component {
 
     render() {
         // this is how you get the id {this.props.match.params.id} 
-        return(<CardSetViewer
-                title={this.state.title}
-                subject={this.state.subject}
-                />)
+        return(
+            <div>
+                <Header/>
+                <CardSetViewer
+                    title={this.state.title}
+                    subject={this.state.subject}
+                />
+            </div>)
     }
 }
 

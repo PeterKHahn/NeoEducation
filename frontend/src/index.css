@@ -250,8 +250,6 @@ body {
 }
 
 .work-panel {
-  background-color: blue; 
-  height: 80vh; 
   margin: auto;
   padding: 10px;
   
@@ -259,10 +257,7 @@ body {
 
 .flash-cards-panel-container {
   width: 50%; 
-  background-color: yellow; 
-  height: 600px; 
-  float: left;
-
+  margin: 0 auto;
   
 
 }
