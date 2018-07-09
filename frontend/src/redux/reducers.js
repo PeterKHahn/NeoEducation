@@ -47,7 +47,9 @@ const cardSetReducer = (state, action) => {
     switch(action.type) {
         case SET_CARDS:
             return {
-                cards: action.cards
+                cards: action.cards.map((curr,index) => {
+                    return Object.assign({}, curr, {absIndex: index})
+                })
             }
         case UPDATE_CARD_PRIORITY:
             let index = action.index

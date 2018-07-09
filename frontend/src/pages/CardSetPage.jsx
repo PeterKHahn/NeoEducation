@@ -33,7 +33,6 @@ class CardSetPage extends Component {
             let success = responseJson.authSucc
             if(success) {
                 let set = responseJson.body.cardSet 
-                console.log(this.props)                
                 this.setState({
                     title: set.title, 
                     subject: set.subject,

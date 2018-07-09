@@ -10,7 +10,7 @@ class CardSetViewer extends Component {
         super(props)
         this.state = {
             priorityStart: 1,
-            priorityEnd: 4,
+            priorityEnd: 3,
         }
 
     }
@@ -18,13 +18,16 @@ class CardSetViewer extends Component {
    
 
     render() {
-        let cards = this.props.cards.map((currElement, index) => {
-
+        let cards = this.props.cards.filter(currElement => {
+            return currElement.priority >= this.state.priorityStart 
+            && currElement.priority <= this.state.priorityEnd
+        }).map((currElement, index) => {
+            
             return(
                 <Card
                     cl="flash-card"
-                    key={index}
-                    index={index}
+                    key={currElement.id}
+                    index={currElement.absIndex}
                     term={currElement.term}
                     definition={currElement.definition}
                     priority={currElement.priority}
@@ -57,7 +60,6 @@ class CardSetViewer extends Component {
 
 
 const Card = (props) => {
-
     return(
         <div className={props.cl} >
             <div className="flash-term">{props.term}</div>

@@ -6,7 +6,7 @@ import CardPage from './pages/CardPage.jsx'
 import history from './history/History.jsx'
 
 
-import {Switch, Route, Router, withRouter, Link} from 'react-router-dom'
+import {Switch, Route, Router} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 class App extends Component {

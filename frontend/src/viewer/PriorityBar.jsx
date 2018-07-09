@@ -8,18 +8,12 @@ class PriorityBar extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            priority: this.props.priority
-        }
 
         this.onClick = this.onClick.bind(this)
 
     }
 
     onClick(newPriority) {
-        this.setState({
-            priority: newPriority,
-        })
 
         this.props.dispatch({
             type: "UPDATE_CARD_PRIORITY",
@@ -35,10 +29,10 @@ class PriorityBar extends Component {
         return(
             <div className="priority-bar">
                 Priority: 
-                <PriorityButton priority={1} cardPriority={this.state.priority} changePriority={this.onClick}/>
-                <PriorityButton priority={2} cardPriority={this.state.priority} changePriority={this.onClick}/>
-                <PriorityButton priority={3} cardPriority={this.state.priority} changePriority={this.onClick}/>
-                <PriorityButton priority={4} cardPriority={this.state.priority} changePriority={this.onClick}/>
+                <PriorityButton priority={1} cardPriority={this.props.priority} changePriority={this.onClick}/>
+                <PriorityButton priority={2} cardPriority={this.props.priority} changePriority={this.onClick}/>
+                <PriorityButton priority={3} cardPriority={this.props.priority} changePriority={this.onClick}/>
+                <PriorityButton priority={4} cardPriority={this.props.priority} changePriority={this.onClick}/>
 
             </div>
         )
