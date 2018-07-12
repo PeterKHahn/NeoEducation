@@ -63,7 +63,6 @@ class StandardCardSet extends Component {
 
         this.cards.push(alpha)
 
-        console.log("adding card...")
         this.setState((prevState) => {
             
             return {
@@ -149,7 +148,7 @@ class CardContent extends Component {
     render(){
         return(
             <div className="card-content">
-                <Term
+                <Topic
                     id={this.props.id}
                     updateTerm={this.props.updateTerm}/>
                 <Definition
@@ -184,17 +183,18 @@ class Definition extends Component {
 
     render() {
         return(
-            <div className='definition'>
+            <div className='notes'>
                 <TextareaAutosize
                     className='text-area' 
-                    placeholder='Definition...'
+                    placeholder='Notes...'
+                    rows={9}
                     tabIndex={5}
                     onChange={this.handleChange}/>
             </div>
         )
     }
 }
-class Term extends Component {
+class Topic extends Component {
     constructor(props) {
         super(props)
 
@@ -220,11 +220,11 @@ class Term extends Component {
 
     render() {
         return(
-            <div className='term'>
+            <div className='topic'>
                 <TextareaAutosize 
-                    className='text-area' 
+                    className='text-area topic-text' 
                     innerRef = {this.testRef} 
-                    placeholder='Term...'
+                    placeholder='Topic...'
                     tabIndex={5}
                     onChange={this.handleChange}/>
             </div>
@@ -246,7 +246,6 @@ class CardSetInfoBox extends Component{
         )
     }
 }
-
 
 
 export default StandardCardSet; 

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import {Link} from 'react-router-dom'
+
 
 const title = "NeoEducation: Flash"
 const subtitle = "The End of something Old, the Start of something New"
@@ -27,10 +29,9 @@ class HeaderBar extends Component {
   
     render(){
         return  <div className='header-bar'>
-                    <HeaderButton title="Home"/>
-                    <HeaderButton title="About"/>
-                    <HeaderButton title="Flash"/>
-                    <SearchBar/>
+                    <HeaderButton title="Home" to="/home"/>
+                    <HeaderButton title="About" to="/about"/>
+                    <HeaderButton title="Sets" to="/sets"/>
                 </div>
     }
 }
@@ -41,7 +42,9 @@ class HeaderBar extends Component {
 class HeaderButton extends Component {
 
     render() {
-        return <div className='header-button'>{this.props.title}</div>
+        return <div className='header-button'>
+            <Link className="header-link" to={this.props.to}>{this.props.title}</Link>
+        </div>
     }
 }
 

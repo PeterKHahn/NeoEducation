@@ -20,9 +20,6 @@ class CardPage extends Component {
     }
 
     render() {
-
-      console.log(this.props.history)
-
   
       return(
         <div>
@@ -98,7 +95,6 @@ class FinishButton extends Component {
     constructor(props) {
         super(props)
         this.onFinish = this.onFinish.bind(this)
-        console.log(this.props)
 
     }
 
@@ -115,7 +111,6 @@ class FinishButton extends Component {
               onClick={this.onFinish}>
                 Done
             </a>
-            <Link to='/cardset/100'>Holo</Link>
             </div>
         )
     }

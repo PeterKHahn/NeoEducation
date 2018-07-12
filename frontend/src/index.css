@@ -10,6 +10,11 @@ body {
 
 }
 
+.text-area.topic-text {
+  font-size: 30px; 
+  height: 40px; 
+}
+
 .text-area {
   border-left: 5px solid #d81150; 
     border-top: 0px none white; 
@@ -20,6 +25,7 @@ body {
 
     color: black; 
     cursor: text;
+
 
     overflow: hidden;
     padding: 2px 5px;
@@ -72,14 +78,14 @@ body {
   -webkit-transition:.5s;
 }
 
-.term {
+.topic {
   cursor: text;
-  display: inline-table;
   position: relative;
   word-break: break-word; 
-  padding-right: 0.75rem;
   box-sizing: border-box; 
   padding-top: 0.25rem;
+  margin: auto;  
+
 
   padding-bottom: 0.25rem;
 
@@ -87,18 +93,17 @@ body {
   width: 50%;
 }
 
-.definition {
+.notes {
   cursor: text;
-  display: inline-table;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 
   position: relative;
   word-break: break-word; 
-  padding-left: 0.75rem;
   box-sizing: border-box; 
+  margin: auto; 
 
-  width: 50%; 
+  width: 70%; 
 
 }
 
@@ -305,6 +310,12 @@ body {
   border-color: blue; 
   border-width: 1px; 
   margin: 0px 10px 0px 0px
+
+}
+
+.header-link {
+  text-decoration: none; 
+  color:inherit;
 
 }
 

@@ -3,6 +3,9 @@ import './App.css';
 import Login from './utility/Login.jsx'
 import CardSetPage from './pages/CardSetPage.jsx'
 import CardPage from './pages/CardPage.jsx'
+import AboutPage from './pages/AboutPage.jsx'
+import SetPage from './pages/SetPage.jsx'
+
 import history from './history/History.jsx'
 
 
@@ -42,7 +45,6 @@ class App extends Component {
     }
 
 
-
     render() {
         if(this.props.signedIn) {
             return(<MainContentx/>)
@@ -56,12 +58,13 @@ class App extends Component {
 }
 
 
-
 const MainContentx = (props) => {
     return (
         <Router history={history}>
             <Switch>
-                <Route exact path="/" component = {CardPage}/>
+                <Route exact path="/home" component = {CardPage}/>
+                <Route exact path="/about" component = {AboutPage}/>
+                <Route exact path="/sets" component = {SetPage}/>
                 <Route exact path='/cardset/:id' component={CardSetPage}/>
             </Switch>
         </Router>

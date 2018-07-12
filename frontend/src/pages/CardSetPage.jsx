@@ -56,7 +56,6 @@ class CardSetPage extends Component {
 
         })
 
-
     }   
 
 
