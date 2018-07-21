@@ -12,6 +12,7 @@ import reducer from './redux/reducers';
 
 const store = createStore(reducer)
 
+
 ReactDOM.render((
     <BrowserRouter>
         <Provider store={store}>

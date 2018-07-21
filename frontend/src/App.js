@@ -77,12 +77,19 @@ const MainContentx = (props) => {
 const FrontPage  = (props) => {
     return(
         <div>
-            <p>Welcome to NeoEducation</p>
-            <Login/>
+            <div className="center-panel">
+                <div className="welcome">Welcome to NeoEducation</div>
+                <Login/>
+            </div>
+
         </div>
     )
     
 }
+
+
+
+
 
 const mapStateToProps = state => ({
     signedIn: state.generalState.loggedIn
