@@ -53,6 +53,7 @@ class StandardCardSet extends Component {
 
     updateDefinition(id, definition) {
         this.cards[id].definition = definition
+        
     }
 
     addCard() {
@@ -176,8 +177,8 @@ class Definition extends Component {
     }
 
     handleChange(event) {
-
-        this.props.updateDefinition(this.props.id, event.target.value)
+        let newText = event.target.value
+        this.props.updateDefinition(this.props.id, newText)
 
     }
 

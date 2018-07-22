@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import './App.css';
 import Login from './utility/Login.jsx'
@@ -17,7 +18,6 @@ class App extends Component {
     componentWillMount() {
 
         // https://stackoverflow.com/questions/30929679/react-fetch-data-in-server-before-render
-        
 
         fetch("/has-credentials", {
             method : 'POST',
@@ -44,10 +44,27 @@ class App extends Component {
 
     }
 
+    componentDidMount() {
+        window.gapi.load('auth2', () => {
+            console.log("ready")
+            console.log(window.gapi.auth2)
+            window.gapi.auth2.init({
+                client_id: '904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com',
+                cookiepolicy: 'single_host_origin' // TODO figure out what this is 
+                 // Request scopes in addition to 'profile' and 'email'
+                //scope: 'additional_scope'
+            })
+
+        })
+
+    }
+
 
     render() {
         if(this.props.signedIn) {
-            return(<MainContentx/>)
+            return(
+            <MainContent/>
+        )
         }else {
             return (
                 <FrontPage/>
@@ -58,11 +75,11 @@ class App extends Component {
 }
 
 
-const MainContentx = (props) => {
+const MainContent = (props) => {
     return (
         <Router history={history}>
             <Switch>
-                <Route exact path="/home" component = {CardPage}/>
+                <Route exact path="/" component = {CardPage}/>
                 <Route exact path="/about" component = {AboutPage}/>
                 <Route exact path="/sets" component = {SetPage}/>
                 <Route exact path='/cardset/:id' component={CardSetPage}/>
@@ -78,17 +95,20 @@ const FrontPage  = (props) => {
     return(
         <div>
             <div className="center-panel">
-                <div className="welcome">Welcome to NeoEducation</div>
-                <Login/>
+                <div className="divider">
+                    
+                </div>
+                <div className="front-page-center">
+                    <div className="welcome">Welcome to NeoEducation</div>
+                    <Login/>
+                </div>
+
             </div>
 
         </div>
     )
     
 }
-
-
-
 
 
 const mapStateToProps = state => ({

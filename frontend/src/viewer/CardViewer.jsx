@@ -1,8 +1,10 @@
 import React, {Component} from 'react'; 
 import {connect} from 'react-redux';
-import { Range } from 'rc-slider';
 
 import PriorityBar from 'viewer/PriorityBar.jsx'
+import TwoColumnViewer from 'viewer/TwoColumnViewer.jsx'
+import PriorityControl from 'viewer/PriorityControl.jsx'
+import FlashViewer from 'viewer/FlashViewer.jsx';
 import 'rc-slider/assets/index.css';
 
 
@@ -35,79 +37,35 @@ class CardSetViewer extends Component {
         let cards = this.props.cards.filter(currElement => {
             return currElement.priority >= this.state.priorityStart 
             && currElement.priority <= this.state.priorityEnd
-        }).map((currElement, index) => {
-            
-            return(
-                <Card
-                    cl="flash-card"
-                    key={currElement.id}
-                    index={currElement.absIndex}
-                    term={currElement.term}
-                    definition={currElement.definition}
-                    priority={currElement.priority}
-                />
-
-            )
         })
 
         
-
         return(
         <div>
-            <h1>{this.props.title}</h1>
-            <h2>{this.props.subject}</h2>
-            <div className="work-panel">
+            <ControlStation updateRange={this.updateRange}/>
 
-                <div className="flash-cards-panel-container">
-                    <PriorityControl updateRange={this.updateRange}/>
+            <FlashViewer {...this.props} cards={cards}/>
 
-                    <div className='flash-cards-panel'>{cards}</div>
-                </div>
-
-
-            </div>
 
         </div>)
     }
 
 }
 
-
-class PriorityControl extends Component {
-
-
-
+class ControlStation extends Component {
 
     render() {
-        return(
-            <div>
-                <Range defaultValue={[0,4]}
-                        allowCross={false}
-                        min={1}
-                        max={4}
-                        dots={true}
-                        onAfterChange={this.props.updateRange}
-                        marks={{
-                            1 : "1",
-                            2 : "2",
-                            3 : "3", 
-                            4 : "4"
-                        
-                        }}/>
+        return (
+            <div className="control-station">
+                Click here to have control of your life!
+                <PriorityControl updateRange={this.props.updateRange}/>
             </div>
         )
     }
 }
 
 
-const Card = (props) => {
-    return(
-        <div className={props.cl} >
-            <div className="flash-term">{props.term}</div>
-            <div className="flash-definition">{props.definition}</div>
-            <PriorityBar priority={props.priority} cardIndex={props.index}/>
-        </div>)
-}
+
 
 
 
