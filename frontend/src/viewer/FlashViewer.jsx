@@ -1,6 +1,4 @@
 import React, {Component} from 'react'; 
-import {connect} from 'react-redux';
-import { Range } from 'rc-slider';
 import CardView from 'viewer/CardView.jsx';
 
 import 'rc-slider/assets/index.css';
@@ -19,11 +17,11 @@ class FlashViewer extends Component {
 
     handleKeyPress(event) {
         let k = event.key
-        if(k == 'ArrowRight') {
+        if(k === 'ArrowRight') {
             this.setState((prevState, props) => ({
                 index : Math.min(prevState.index + 1, this.props.cards.length - 1)
             }))
-        }else if (k == 'ArrowLeft') {
+        }else if (k === 'ArrowLeft') {
 
             this.setState((prevState, props) => ({
                 index : Math.max((prevState.index - 1), 0)
@@ -51,14 +49,17 @@ class FlashViewer extends Component {
 
         let cardE = <div></div>
 
-        let length = this.props.cards.length
         let index = this.state.index 
         let card = this.props.cards[index];
+
+
         if(card) {
             cardE = (
                 <CardView
                     cl="flash-card"
                     term={card.term}
+                    index={card.absIndex}
+
                     definition = {card.definition}
                     priority = {card.priority}
                 />

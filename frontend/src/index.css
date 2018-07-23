@@ -329,7 +329,7 @@ body {
 
 }
 
-.header-link {
+.link {
   text-decoration: none; 
   color:inherit;
 
@@ -435,5 +435,40 @@ span.buttonText {
   box-sizing: border-box;
   width: 95%; 
   margin: auto; 
+
+}
+
+
+.home-page-button-container {
+
+  display: inline-block; 
+  width: 50%; 
+  box-sizing: border-box; 
+
+}
+
+.home-page-button {
+  background-color: white; 
+  color: black; 
+  margin: 5px; 
+  padding-top: 10px; 
+  padding-bottom: 10px; 
+  border-radius: 7px; 
+  border: thin solid #888;
+  box-shadow: 1px 1px 1px grey;
+
+
+}
+
+
+.card-set-summary {
+  padding: 10px; 
+  margin: 10px; 
+  width: 80%; 
+  background-color: white; 
+  box-shadow: 1px 1px 1px grey;
+  border-radius: 5px; 
+  border-top: 10px solid black; 
+  
 
 }

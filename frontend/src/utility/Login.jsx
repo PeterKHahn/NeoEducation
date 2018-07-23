@@ -67,14 +67,27 @@ class Login extends Component {
 
     render() {
 
-        return(
-            <div className='header-button'>
-                <div id="customBtn" className="customGPlusSignIn" onClick={this.loginFunction}>
-                    <span className="icon"></span>
-                    <span className="buttonText">Sign in with Google</span>
+        if(!this.props.signedIn) {
+            return(
+                <div className='header-button'>
+                    <div id="customBtn" className="customGPlusSignIn" onClick={this.loginFunction}>
+                        <span className="icon"></span>
+                        <span className="buttonText">Sign in with Google</span>
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        }else {
+            return(
+                <div className='header-button'>
+                    <div id="customBtn" className="customGPlusSignIn">
+                        <span className="icon"></span>
+                        <span className="buttonText">Signed in with Google</span>
+                    </div>
+                </div>
+            )
+        }
+
+
     }
 }
 

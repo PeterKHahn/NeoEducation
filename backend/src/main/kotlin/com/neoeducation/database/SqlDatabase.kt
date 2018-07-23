@@ -44,7 +44,7 @@ object UsersDb : Table() {
 
 object UsersToCardSetDb : Table() {
     val userEmail = varchar("email", 32) references UsersDb.email
-    val cardSetId = entityId("cardSet", CardSetsDb)
+    val cardSetId = entityId("cardSet", CardSetsDb) references CardSetsDb.id
 }
 
 object CardsToPriority
@@ -164,7 +164,8 @@ class CardDatabase(name: String) {
     }
 
     /**
-     * Retrieves all CardSets associated with a given email
+     * Retrieves all CardSets associated with a given email. The SQL call does not check for credentials, so it is
+     * important that is done beforehand
      */
     fun retreiveCardSetsFromUser(email: String): List<CardSetInfo> {
         return transaction {

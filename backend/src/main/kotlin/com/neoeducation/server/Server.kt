@@ -8,7 +8,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
-import com.google.api.client.util.store.FileDataStoreFactory
+import com.google.api.client.util.store.MemoryDataStoreFactory
 import com.neoeducation.database.CardDatabase
 import com.neoeducation.database.ElementNotInDatabaseException
 import com.neoeducation.notes.CardSetReceived
@@ -28,7 +28,6 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.sessions.*
-import java.io.File
 import java.util.*
 
 class Server {
@@ -43,8 +42,8 @@ class Server {
         verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), JacksonFactory())
                 .setAudience(Collections.singletonList(clientId))
                 .build()
-        dataStoreFactory = FileDataStoreFactory(File("secrets/credentials"))
-        dataStorage = dataStoreFactory.getDataStore("010101")
+        dataStoreFactory = MemoryDataStoreFactory.getDefaultInstance();
+        dataStorage = StoredCredential.getDefaultDataStore(dataStoreFactory)
         cardDatabase = CardDatabase("secrets/databases/cardsdb.sqlite3")
     }
 
@@ -75,6 +74,7 @@ class Server {
                         println("Authentication cookie found")
 
                         val authenticationCode = cookie.token
+
                         val idToken = verifier.verify(authenticationCode)
                         if (idToken != null) {
                             // we have verified the ID, it is time to do action
@@ -82,9 +82,12 @@ class Server {
                             val payload = idToken.payload
                             val email = payload.email
 
+
+
                             // Puts the credentials into storage, linked to the email
                             val credential = GoogleCredential().setAccessToken(authenticationCode)
                             dataStorage.set(email, StoredCredential(credential))
+
 
                             // Sends a cookie in the response that will allow them to access their info without re-logging in
                             call.sessions.set(AuthenticationCookie(authenticationCode))
@@ -203,6 +206,34 @@ class Server {
                     }
 
 
+                }
+
+                post("/retrieve-all-cards") {
+                    val authenticationCookie = call.sessions.get<AuthenticationCookie>()
+                    if (authenticationCookie != null) {
+                        println("Authentication found...")
+                        val token = authenticationCookie.token
+                        val idToken = verifier.verify(token)
+                        if (idToken != null) {
+                            println("Authentication success!")
+
+                            val payload = idToken.payload
+                            val email = payload.email
+
+                            println("retreiving card sets")
+
+                            val resultCardSets = cardDatabase.retreiveCardSetsFromUser(email)
+                            println("card set found!")
+                            call.respond(ApiResponse(true, RetrieveCardSetsResponse(resultCardSets)))
+
+
+                        } else {
+                            call.respond(ApiResponse(false, AuthenticationFailureResponse))
+
+                        }
+                    } else {
+                        call.respond(ApiResponse(false, AuthenticationFailureResponse))
+                    }
                 }
 
 

@@ -43,7 +43,7 @@ class HeaderButton extends Component {
 
     render() {
         return <div className='header-button'>
-            <Link className="header-link" to={this.props.to}>{this.props.title}</Link>
+            <Link className="link" to={this.props.to}>{this.props.title}</Link>
         </div>
     }
 }

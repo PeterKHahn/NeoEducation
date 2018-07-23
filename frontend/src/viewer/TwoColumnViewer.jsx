@@ -1,6 +1,4 @@
 import React, {Component} from 'react'; 
-import {connect} from 'react-redux';
-import { Range } from 'rc-slider';
 import CardView from 'viewer/CardView.jsx';
 
 import 'rc-slider/assets/index.css';
@@ -17,7 +15,7 @@ class TwoColumnViewer extends Component {
 
         for(let i = 0; i < this.props.cards.length; i++) {
             let card = this.props.cards[i];
-            if(i % 2 == 0) {
+            if(i % 2 ===0) {
                 ar1.push(
                     <CardView
                     cl="flash-card"
