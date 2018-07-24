@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Login from 'utility/Login.jsx'
 import {Link} from 'react-router-dom'
 
@@ -19,6 +19,7 @@ const FrontPage  = (props) => {
                         {props.signedIn ? <HomePageButton text="Create a Study Set" link="/create"/> : ""}
                         {props.signedIn ? <HomePageButton text="View your Study Sets" link="/sets"/> : ""}
                     </div>
+                    <Tmp/>
 
                 </div>
 
@@ -27,6 +28,35 @@ const FrontPage  = (props) => {
         </div>
     )
     
+}
+
+class Tmp extends Component {
+
+    constructor(props) {
+        super(props)
+        this.click = this.click.bind(this)
+    }
+
+    click() {
+        fetch("/test-card-set", {
+            method : 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'text/html',
+                'Content-Type': 'text/html'
+            },
+          
+            body : "hello"
+        }).then(results => {
+            console.log(results.text())
+
+
+        })
+    }
+
+    render() {
+        return<div onClick={this.click}>Click me</div>
+    }
 }
 
 const HomePageButton = (props) => {

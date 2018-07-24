@@ -16,6 +16,7 @@ import com.neoeducation.notes.CardSetRequest
 import com.neoeducation.server.serverdata.*
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.*
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
@@ -64,8 +65,32 @@ class Server {
                 }
 
             }
+            install(Authentication) {
+                form(name = "cardcalls") {
+                    validate { credentials ->
+                        println(credentials)
+                        if (credentials.name == credentials.password) {
+                            println("credential succ")
+                            UserIdPrincipal(credentials.name)
+                        } else {
+                            println("credential fail")
+
+                            null
+                        }
+                    }
+                }
+            }
 
             routing {
+                // https://ktor.io/features/authentication.html
+
+                authenticate("cardcalls") {
+                    post("/test-card-set") {
+                        val principal = call.authentication.principal<UserIdPrincipal>()
+                        println(principal)
+                        call.respond("hello there")
+                    }
+                }
 
                 post("/has-credentials") {
                     println("Checking if client has credentials")
@@ -81,7 +106,6 @@ class Server {
                             println("User is verified and logged in")
                             val payload = idToken.payload
                             val email = payload.email
-
 
 
                             // Puts the credentials into storage, linked to the email
