@@ -38,15 +38,19 @@ class Tmp extends Component {
     }
 
     click() {
+
+        var formData = new FormData();
+
+        formData.append('userParamName', 'abc123');
+        formData.append('passwordParamName', 'abc123');
+        formData.append('challenge', 'abc123');
+
         fetch("/test-card-set", {
             method : 'POST',
             credentials: "include",
-            headers: {
-                'Accept': 'text/html',
-                'Content-Type': 'text/html'
-            },
+
           
-            body : "hello"
+            body : formData
         }).then(results => {
             console.log(results.text())
 

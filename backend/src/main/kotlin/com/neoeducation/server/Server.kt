@@ -1,6 +1,9 @@
 package com.neoeducation.server
 
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTVerifier
+import com.auth0.jwt.algorithms.Algorithm
 import com.google.api.client.auth.oauth2.StoredCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
@@ -9,6 +12,8 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.MemoryDataStoreFactory
+import com.neoeducation.authentication.AuthenticationToken
+import com.neoeducation.authentication.TokenHandler
 import com.neoeducation.database.CardDatabase
 import com.neoeducation.database.ElementNotInDatabaseException
 import com.neoeducation.notes.CardSetReceived
@@ -16,7 +21,12 @@ import com.neoeducation.notes.CardSetRequest
 import com.neoeducation.server.serverdata.*
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.auth.*
+import io.ktor.auth.Authentication
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authenticate
+import io.ktor.auth.authentication
+import io.ktor.auth.jwt.JWTPrincipal
+import io.ktor.auth.jwt.jwt
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
@@ -31,6 +41,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.sessions.*
 import java.util.*
 
+
 class Server {
 
     private val clientId = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
@@ -39,6 +50,8 @@ class Server {
     private val dataStorage: DataStore<StoredCredential>
     private val cardDatabase: CardDatabase
 
+    private val tokenHandler: TokenHandler
+
     init {
         verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), JacksonFactory())
                 .setAudience(Collections.singletonList(clientId))
@@ -46,7 +59,19 @@ class Server {
         dataStoreFactory = MemoryDataStoreFactory.getDefaultInstance();
         dataStorage = StoredCredential.getDefaultDataStore(dataStoreFactory)
         cardDatabase = CardDatabase("secrets/databases/cardsdb.sqlite3")
+        tokenHandler = TokenHandler()
+
+
     }
+
+    private val algorithm = Algorithm.HMAC256("secret")
+
+
+    private fun makeJwtVerifier(issuer: String, audience: String): JWTVerifier = JWT
+            .require(algorithm)
+            .withAudience(audience)
+            .withIssuer(issuer)
+            .build()
 
 
     fun start() {
@@ -55,7 +80,7 @@ class Server {
         embeddedServer(Netty, 4567) {
 
             install(Sessions) {
-                cookie<AuthenticationCookie>("SESSION")
+                cookie<AuthenticationToken>("SESSION")
             }
             install(ContentNegotiation) {
                 gson {
@@ -65,20 +90,32 @@ class Server {
                 }
 
             }
-            install(Authentication) {
-                form(name = "cardcalls") {
-                    validate { credentials ->
-                        println(credentials)
-                        if (credentials.name == credentials.password) {
-                            println("credential succ")
-                            UserIdPrincipal(credentials.name)
-                        } else {
-                            println("credential fail")
+            val jwtIssuer = "https://jwt-provider-domain/" // environment.config.property("jwt.domain").getString()
+            val jwtAudience = "jwt-audience" // environment.config.property("jwt.audience").getString()
+            val jwtRealm = "ktor sample app" // environment.config.property("jwt.realm").getString()
 
+
+            install(Authentication) {
+                println("hey1")
+
+                jwt(name = "cardcalls") {
+                    println("BRAVO")
+                    realm = jwtRealm
+                    verifier(makeJwtVerifier(jwtIssuer, jwtAudience))
+
+                    validate { credential ->
+                        println("Charlie")
+                        println(credential)
+                        if (true || credential.payload.audience.contains(jwtAudience)) {
+                            JWTPrincipal(credential.payload)
+
+                        } else {
                             null
                         }
                     }
                 }
+
+
             }
 
             routing {
@@ -86,7 +123,10 @@ class Server {
 
                 authenticate("cardcalls") {
                     post("/test-card-set") {
+                        println("AYYYYY")
                         val principal = call.authentication.principal<UserIdPrincipal>()
+                        println("OH HO2")
+
                         println(principal)
                         call.respond("hello there")
                     }
@@ -94,11 +134,28 @@ class Server {
 
                 post("/has-credentials") {
                     println("Checking if client has credentials")
-                    val cookie = call.sessions.get<AuthenticationCookie>()
+                    val cookie = call.sessions.get<AuthenticationToken>()
                     if (cookie != null) {
-                        println("Authentication cookie found")
+                        println("Authentication token found")
 
-                        val authenticationCode = cookie.token
+                        val authenticationCode = cookie.jwt
+
+                        if(tokenHandler.verify(cookie)) {
+                            // TODO fill with all the stuff we have for Google
+                            println("User is verified and logged in")
+
+                            // TODO have their email retrieved
+
+                            // TODO respond positively
+
+                            call.respond(ApiResponse(true, HasCredentialsResponse(true)))
+
+
+                        }else {
+                            // We have failed verification, fuck off fraud
+                            println("Verification Failed")
+                            call.respond(ApiResponse(false, HasCredentialsResponse(false)))
+                        }
 
                         val idToken = verifier.verify(authenticationCode)
                         if (idToken != null) {
@@ -112,9 +169,6 @@ class Server {
                             val credential = GoogleCredential().setAccessToken(authenticationCode)
                             dataStorage.set(email, StoredCredential(credential))
 
-
-                            // Sends a cookie in the response that will allow them to access their info without re-logging in
-                            call.sessions.set(AuthenticationCookie(authenticationCode))
 
                             call.respond(ApiResponse(true, HasCredentialsResponse(true)))
 
