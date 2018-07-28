@@ -1,16 +1,9 @@
 package com.neoeducation.server
 
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.JWTVerifier
-import com.auth0.jwt.algorithms.Algorithm
-import com.google.api.client.auth.oauth2.StoredCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.store.DataStore
-import com.google.api.client.util.store.DataStoreFactory
-import com.google.api.client.util.store.MemoryDataStoreFactory
 import com.neoeducation.authentication.AuthenticationToken
 import com.neoeducation.authentication.TokenHandler
 import com.neoeducation.database.CardDatabase
@@ -39,8 +32,6 @@ class Server {
 
     private val clientId = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
     private val verifier: GoogleIdTokenVerifier
-    private val dataStoreFactory: DataStoreFactory
-    private val dataStorage: DataStore<StoredCredential>
     private val cardDatabase: CardDatabase
 
     private val tokenHandler: TokenHandler
@@ -49,22 +40,11 @@ class Server {
         verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), JacksonFactory())
                 .setAudience(Collections.singletonList(clientId))
                 .build()
-        dataStoreFactory = MemoryDataStoreFactory.getDefaultInstance();
-        dataStorage = StoredCredential.getDefaultDataStore(dataStoreFactory)
         cardDatabase = CardDatabase("secrets/databases/cardsdb.sqlite3")
         tokenHandler = TokenHandler()
 
 
     }
-
-    private val algorithm = Algorithm.HMAC256("secret")
-
-
-    private fun makeJwtVerifier(issuer: String, audience: String): JWTVerifier = JWT
-            .require(algorithm)
-            .withAudience(audience)
-            .withIssuer(issuer)
-            .build()
 
 
     fun start() {

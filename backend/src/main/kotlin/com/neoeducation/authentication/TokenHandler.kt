@@ -38,7 +38,7 @@ class TokenHandler {
 
             val token = JWT.create()
                     .withIssuer("auth0")
-                    //.withExpiresAt(expirationDate)
+                    .withExpiresAt(expirationDate)
                     .withClaim("email", email)
                     .sign(algorithm)
 
@@ -60,8 +60,10 @@ class TokenHandler {
             val jwt = auth.token
             val verifier = JWT.require(algorithm)
                     .withIssuer("auth0")
+                    .acceptExpiresAt(60)
                     .build()
             verifier.verify(jwt)
+
 
 
 
@@ -88,6 +90,9 @@ class TokenHandler {
                     .build()
             val decodedJwt = verifier.verify(jwt)
             val email = decodedJwt.getClaim("email").asString()
+            val expiresAt = decodedJwt.expiresAt
+            println(expiresAt)
+
 
             return UserInformation(email)
 
