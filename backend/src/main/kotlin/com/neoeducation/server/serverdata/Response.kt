@@ -4,7 +4,7 @@ import com.neoeducation.notes.CardSetData
 import com.neoeducation.notes.CardSetInfo
 
 
-open class ResponseBody(msg: String)
+open class ResponseBody(val msg: String)
 
 /**
  * Standard Response Kit for /save-card-set that returns whether the authentication

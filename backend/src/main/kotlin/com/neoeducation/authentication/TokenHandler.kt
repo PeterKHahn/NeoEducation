@@ -8,24 +8,23 @@ import java.util.*
 import javax.crypto.KeyGenerator
 
 
+/**
+ * The TokenHandler class handles authentication tokens given out by this server so that clients can access the
+ * NeoEducation API. The exact hashing of the token is left as implementation details, but this class provides the
+ * framework for creating, verifying, and extracting information from tokens.
+ *
+ * @author Peter Hahn
+ */
 class TokenHandler {
 
 
-    private val key: ByteArray
     private val algorithm: Algorithm
 
     init {
 
         val keyGen = KeyGenerator.getInstance("HmacSHA256")
-
-
-        if (keyGen == null) {
-            println("HEY YOUR KEYGENERATED IS NULL")
-        }
-
         val secretKey = keyGen.generateKey()
-
-        key = secretKey.encoded
+        val key = secretKey.encoded
 
         algorithm = Algorithm.HMAC256(key)
 
@@ -56,7 +55,6 @@ class TokenHandler {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, 30)
         val expireTime = calendar.time
-        println(expireTime)
         return expireTime
     }
 
@@ -71,12 +69,6 @@ class TokenHandler {
                     .acceptExpiresAt(60)
                     .build()
             verifier.verify(jwt)
-
-
-
-
-
-            println("Auth success! Come get your key bih")
 
             //OK, we can trust this JWT
 
@@ -98,8 +90,6 @@ class TokenHandler {
                     .build()
             val decodedJwt = verifier.verify(jwt)
             val email = decodedJwt.getClaim("email").asString()
-            val expiresAt = decodedJwt.expiresAt
-            println(expiresAt)
 
 
             return UserInformation(email)

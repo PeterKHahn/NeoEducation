@@ -27,12 +27,19 @@ import io.ktor.server.netty.Netty
 import io.ktor.sessions.*
 import java.util.*
 
-
+/**
+ * The Server class is where all NeoEducation API will be served from, including functionality of retrieving and saving
+ * note sets
+ *
+ * @author Peter Hahn
+ */
 class Server {
 
     private val clientId = "904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com"
     private val verifier: GoogleIdTokenVerifier
     private val cardDatabase: CardDatabase
+
+    private val portNumber = 4567
 
     private val tokenHandler: TokenHandler
 
@@ -47,10 +54,12 @@ class Server {
     }
 
 
+    /**
+     * Starts the server on the port specified above, which opens the NeoEducation API and card sets.
+     */
     fun start() {
 
-
-        embeddedServer(Netty, 4567) {
+        embeddedServer(Netty, portNumber) {
 
             install(Sessions) {
                 cookie<AuthenticationToken>("SESSION")
@@ -66,6 +75,11 @@ class Server {
 
             routing {
 
+                /**
+                 * The has-credentials post method sends up to the client on whether its initialized cookie is
+                 * verified. The specifics of what it means to have a verified cookie is defined in the Tokenhandler
+                 * class.
+                 */
                 post("/has-credentials") {
                     println("Checking if client has credentials")
                     val authToken = call.sessions.get<AuthenticationToken>()
@@ -80,7 +94,7 @@ class Server {
 
 
                         } else {
-                            // We have failed verification, fuck off fraud
+                            // We have failed verification
                             println("Verification Failed")
                             call.respond(ApiResponse(false, HasCredentialsResponse(false)))
                         }
@@ -93,6 +107,11 @@ class Server {
                     }
                 }
 
+                /**
+                 * This post method deals with GoogleIDs, after a user has logged in through Google. It verifies that
+                 * the Google Token is valid, and also in exchange gets a NeoEducation token that it can use to access
+                 * our API
+                 */
                 post("/authenticate") {
                     println("Got a message")
                     val authenticationCode = call.receiveText()
@@ -110,7 +129,7 @@ class Server {
 
 
                     } else {
-                        // We have failed verification, fuck off fraud
+                        // We have failed verification
                         println("NOT VERIFIED")
                         call.respondText("Not verified", ContentType.Text.Html)
                     }
@@ -119,7 +138,8 @@ class Server {
 
 
                 /**
-                 * This is not autosave, this is normal save, where we assign a new ID
+                 * Save card set saves the card set that a user can make in edit mode. Note that this is not autosave,
+                 * this is normal save, where we assign a new ID
                  */
                 post("/save-card-set") {
                     val authenticationToken = call.sessions.get<AuthenticationToken>()
@@ -149,6 +169,10 @@ class Server {
 
                 }
 
+                /**
+                 * Retrieve Card set will find a card set ID, and if the user has access to that cardset, they will be
+                 * able to retrieve it.
+                 */
                 post("/retrieve-card-set") {
                     val authenticationToken = call.sessions.get<AuthenticationToken>()
                     if (authenticationToken != null) {
@@ -188,6 +212,9 @@ class Server {
 
                 }
 
+                /**
+                 * Returns the set of card sets that are associated with the user.
+                 */
                 post("/retrieve-all-cards") {
                     val authenticationToken = call.sessions.get<AuthenticationToken>()
                     if (authenticationToken != null) {
@@ -199,11 +226,7 @@ class Server {
                             val userInformation = tokenHandler.retrieveUserInformation(authenticationToken)
                             val email = userInformation.email
 
-
-                            println("retreiving card sets")
-
                             val resultCardSets = cardDatabase.retreiveCardSetsFromUser(email)
-                            println("card set found!")
                             call.respond(ApiResponse(true, RetrieveCardSetsResponse(resultCardSets)))
 
 

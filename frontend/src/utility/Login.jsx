@@ -16,10 +16,6 @@ class Login extends Component {
     onSuccess(response) {
         console.log('success!')       
 
-        var bodyJson = {
-            "authentication" : response.getAuthResponse().id_token
-        }
-        console.log(bodyJson)
         fetch("/authenticate", {
             method : 'POST',
             credentials: "include",
