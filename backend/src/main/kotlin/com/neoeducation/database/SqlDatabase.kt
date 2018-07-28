@@ -47,7 +47,6 @@ object UsersToCardSetDb : Table() {
     val cardSetId = entityId("cardSet", CardSetsDb) references CardSetsDb.id
 }
 
-object CardsToPriority
 
 class CardDatabase(name: String) {
     init {
