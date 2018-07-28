@@ -176,6 +176,7 @@ class Server {
 
 
                         } else {
+                            println("Token was not verified")
                             call.respond(ApiResponse(false, AuthenticationFailureResponse))
 
                         }
@@ -207,6 +208,8 @@ class Server {
 
 
                         } else {
+                            println("Token was not verified")
+
                             call.respond(ApiResponse(false, AuthenticationFailureResponse))
 
                         }

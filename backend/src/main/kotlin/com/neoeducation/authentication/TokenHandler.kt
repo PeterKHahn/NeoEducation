@@ -34,7 +34,7 @@ class TokenHandler {
 
     fun generate(email: String): AuthenticationToken {
         return try {
-            val expirationDate = GregorianCalendar(118, 7, 29).time // Date(2018, 7, 25)
+            val expirationDate = generateExpiration()
 
             val token = JWT.create()
                     .withIssuer("auth0")
@@ -50,6 +50,14 @@ class TokenHandler {
         }
 
 
+    }
+
+    private fun generateExpiration(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DATE, 30)
+        val expireTime = calendar.time
+        println(expireTime)
+        return expireTime
     }
 
 
