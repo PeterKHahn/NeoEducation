@@ -4,6 +4,8 @@ import Header from 'header/Header.jsx';
 import React, { Component } from 'react';
 
 import {connect} from 'react-redux';
+import {Switch, Route, Router} from 'react-router-dom'
+
 
 
 
@@ -64,14 +66,21 @@ class CardSetPage extends Component {
         return(
             <div>
                 <Header/>
-                <CardSetViewer
-                    title={this.state.title}
-                    subject={this.state.subject}
-                />
+                <Switch>
+                    <Route path="/cardset/:id/edit" render = {(routeProps) => <CardSetViewer title={this.state.title} subject={this.state.subject}/>}/>
+                    <Route path="/cardset/:id/credit" component = {Tmp}/>
+
+                </Switch>
+
             </div>)
     }
 }
 
+class Tmp extends Component {
+    render() {
+        return<div>hey</div>
+    }
+}
 
 
 

@@ -75,7 +75,7 @@ const MainContent = (props) => {
                 <Route exact path="/create" component = {CardPage}/>
                 <Route exact path="/about" component = {AboutPage}/>
                 <Route exact path="/sets" component = {SetPage}/>
-                <Route exact path='/cardset/:id' component={CardSetPage}/>
+                <Route path='/cardset/:id' component={CardSetPage}/>
             </Switch>
         </Router>
 
