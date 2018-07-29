@@ -1,7 +1,6 @@
 package com.neoeducation.database
 
 import com.neoeducation.notes.*
-import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
@@ -43,8 +42,13 @@ object UsersDb : Table() {
 
 
 object UsersToCardSetDb : Table() {
-    val userEmail = varchar("email", 32) references UsersDb.email
+    val userEmail = varchar("email", 50) references UsersDb.email
     val cardSetId = entityId("cardSet", CardSetsDb) references CardSetsDb.id
+}
+
+object UsersToCardsDb : Table() {
+    val userEmail = varchar("email", 50) references UsersDb.email
+    val cardId = entityId("card", CardsDb) references CardsDb.id
 }
 
 
@@ -59,24 +63,40 @@ class CardDatabase(name: String) {
         transaction {
             logger.addLogger(StdOutSqlLogger)
             create(CardsDb, CardSetsDb, UsersDb)
-            create(CardSetsToCardsDb, UsersToCardSetDb)
+            create(CardSetsToCardsDb, UsersToCardSetDb, UsersToCardsDb)
         }
 
     }
 
 
-    private fun insertCard(card: CardReceived): EntityID<Int> {
+    private fun insertCard(card: CardReceived): Int {
         return transaction {
 
+            if (card.validId()) {
+                CardsDb.update({ CardsDb.id eq card.id }) {
+                    it[term] = card.term
+                    it[definition] = card.definition
+                    it[priority] = card.priority
 
-            val newId = CardsDb.insertAndGetId {
-                it[term] = card.term
-                it[definition] = card.definition
-                it[priority] = 1
+
+                }
+
+                card.id // TODO does not deal with security
+
+
+            } else {
+                val newId = CardsDb.insertAndGetId {
+                    it[term] = card.term
+                    it[definition] = card.definition
+                    it[priority] = 1
+
+                }
+                newId.value
+
 
             }
 
-            newId
+
         }
 
     }
@@ -110,6 +130,7 @@ class CardDatabase(name: String) {
                 CardSetsToCardsDb.insert {
                     it[cardSetId] = newCardSetId
                     it[cardId] = newCardId
+
 
                 }
             }
