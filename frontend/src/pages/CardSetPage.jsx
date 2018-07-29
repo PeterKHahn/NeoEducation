@@ -1,6 +1,6 @@
 import CardSetViewer from 'viewer/CardViewer.jsx'
 import Header from 'header/Header.jsx';
-import WorkPanel from 'workpanel/WorkPanel.jsx';
+import CreatePanel from 'workpanel/WorkPanel.jsx';
 import StandardCardSet from 'card/Card.jsx';
 
 
@@ -109,7 +109,7 @@ class CardSetPage extends Component {
                 <Header/>
                 <Switch>
                     <Route path="/cardset/:id/view" render = {(routeProps) => <CardSetViewer {...this.state} updateCard={this.updateCard}/>}/>
-                    <Route path="/cardset/:id/edit" component = {WorkPanel}/>
+                    <Route path="/cardset/:id/edit" component = {CreatePanel}/>
 
                 </Switch>
 

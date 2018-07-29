@@ -3,15 +3,9 @@ import TextareaAutosize from 'react-autosize-textarea'
 
 
 class StandardCardSet extends Component {
-    
-    constructor(props){
-        super(props)
-       
-    }
-
 
     render() {
-        let ls = this.state.cards;
+        let ls = this.props.cards;
         let res = ls.map((currElement, index) => {
             return <Card
                     key={index} 

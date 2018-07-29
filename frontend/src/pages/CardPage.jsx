@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Header from 'header/Header.jsx';
-import WorkPanel from 'workpanel/WorkPanel.jsx';
+import CreatePanel from 'workpanel/WorkPanel.jsx';
 
 
 
@@ -25,7 +25,7 @@ class CardPage extends Component {
       return(
         <div>
           <Header/>
-          <WorkPanel history={this.props.history}/>
+          <CreatePanel history={this.props.history}/>
         </div>
       )
     }
