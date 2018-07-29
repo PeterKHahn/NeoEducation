@@ -141,7 +141,7 @@ class Server {
                  * Save card set saves the card set that a user can make in edit mode. Note that this is not autosave,
                  * this is normal save, where we assign a new ID
                  */
-                post("/save-card-set") {
+                post("/create-card-set") {
                     val authenticationToken = call.sessions.get<AuthenticationToken>()
                     if (authenticationToken != null) {
                         println("Authentication found...")
@@ -227,7 +227,7 @@ class Server {
                             val userInformation = tokenHandler.retrieveUserInformation(authenticationToken)
                             val email = userInformation.email
 
-                            val resultCardSets = cardDatabase.retreiveCardSetsFromUser(email)
+                            val resultCardSets = cardDatabase.retrieveCardSetsFromUser(email)
                             call.respond(ApiResponse(true, RetrieveCardSetsResponse(resultCardSets)))
 
 

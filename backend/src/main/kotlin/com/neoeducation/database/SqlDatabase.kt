@@ -150,7 +150,6 @@ class CardDatabase(name: String) {
                     it[cardSetId] = newCardSetId
                     it[cardId] = newCardId
 
-
                 }
             }
 
@@ -206,7 +205,7 @@ class CardDatabase(name: String) {
      * Retrieves all CardSets associated with a given email. The SQL call does not check for credentials, so it is
      * important that is done beforehand
      */
-    fun retreiveCardSetsFromUser(email: String): List<CardSetInfo> {
+    fun retrieveCardSetsFromUser(email: String): List<CardSetInfo> {
         return transaction {
 
             val cardSets = (UsersToCardSetDb innerJoin CardSetsDb).select {

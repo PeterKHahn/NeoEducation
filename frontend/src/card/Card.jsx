@@ -6,73 +6,9 @@ class StandardCardSet extends Component {
     
     constructor(props){
         super(props)
-
-        this.cards = [{
-            term: "", 
-            definition: ""
-        }]
-
-        this.state = {
-            cards : this.cards,
-            title : "",
-            subject: ""
-        }
-
-        this.addCard = this.addCard.bind(this)
-
-        this.updateTitle = this.updateTitle.bind(this)
-        this.updateSubject = this.updateSubject.bind(this)
-
-        this.updateTerm = this.updateTerm.bind(this)
-        this.updateDefinition = this.updateDefinition.bind(this)
        
     }
-    updateTitle(updatedTitle) {
 
-        this.setState((prevState) => {
-            return {
-                cards: prevState.cards, 
-                title : updatedTitle, 
-                subject : prevState.subject
-            }
-        })
-    }
-    updateSubject(updatedSubject) {
-        this.setState((prevState) => {
-            return {
-                cards: prevState.cards, 
-                title: prevState.title, 
-                subject: updatedSubject
-            }
-        })
-    }
-
-    updateTerm(id, term) {
-        this.cards[id].term = term
-    }
-
-    updateDefinition(id, definition) {
-        this.cards[id].definition = definition
-        
-    }
-
-    addCard() {
-        let alpha = {
-            term: "", 
-            definition: ""
-        }
-
-        this.cards.push(alpha)
-
-        this.setState((prevState) => {
-            
-            return {
-                cards: prevState.cards, 
-                title: prevState.title, 
-                subject: prevState.subject
-            }
-        })
-    }
 
     render() {
         let ls = this.state.cards;
@@ -81,15 +17,15 @@ class StandardCardSet extends Component {
                     key={index} 
                     id={index}
                     index={index} 
-                    updateTerm={this.updateTerm}
-                    updateDefinition={this.updateDefinition}/>
+                    updateTerm={this.props.updateTerm}
+                    updateDefinition={this.props.updateDefinition}/>
         })
 
 
         return  <div className='card-set'>
                     <CardSetInfoBox
-                        titleFunction={this.updateTitle}
-                        subjectFunction={this.updateSubject}/>
+                        titleFunction={this.props.updateTitle}
+                        subjectFunction={this.props.updateSubject}/>
                     <div >
                         {res}
                     </div>
