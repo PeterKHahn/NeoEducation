@@ -34,6 +34,10 @@ class CardSetViewer extends Component {
    
 
     render() {
+        console.log(this.props)
+
+
+
         let cards = this.props.cards.filter(currElement => {
             return currElement.priority >= this.state.priorityStart 
             && currElement.priority <= this.state.priorityEnd
@@ -71,10 +75,7 @@ class ControlStation extends Component {
 
 
 
-const mapStateToProps = state => ({
-    cards: state.cardSetState.cards
-})
 
 
 
-export default connect(mapStateToProps)(CardSetViewer); 
+export default CardSetViewer; 

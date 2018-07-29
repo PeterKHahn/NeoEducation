@@ -47,10 +47,12 @@ class FlashViewer extends Component {
 
     render() {
 
+
         let cardE = <div></div>
 
         let index = this.state.index 
         let card = this.props.cards[index];
+
 
 
         if(card) {
@@ -62,6 +64,7 @@ class FlashViewer extends Component {
 
                     definition = {card.definition}
                     priority = {card.priority}
+                    updateCard = {this.props.updateCard}
                 />
             )
         }
