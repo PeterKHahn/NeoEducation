@@ -1,6 +1,9 @@
 package com.neoeducation.database
 
 import com.neoeducation.notes.*
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
@@ -20,6 +23,14 @@ object CardsDb : IntIdTable() {
     val term = text("term")
     val definition = text("definition")
     val priority = integer("priority")
+}
+
+class Card(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<Card>(CardsDb)
+
+    val term by CardsDb.term
+    val definition by CardsDb.definition
+    val priority by CardsDb.priority
 }
 
 object CardSetsDb : IntIdTable() {
@@ -73,13 +84,14 @@ class CardDatabase(name: String) {
         return transaction {
 
             if (card.validId()) {
-                CardsDb.update({ CardsDb.id eq card.id }) {
+                val x = CardsDb.update({ CardsDb.id eq card.id }) {
                     it[term] = card.term
                     it[definition] = card.definition
                     it[priority] = card.priority
 
 
                 }
+
 
                 card.id // TODO does not deal with security
 
