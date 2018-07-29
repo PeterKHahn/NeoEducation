@@ -1,7 +1,6 @@
 import React, {Component} from 'react'; 
 import {connect} from 'react-redux';
 
-import PriorityBar from 'viewer/PriorityBar.jsx'
 import TwoColumnViewer from 'viewer/TwoColumnViewer.jsx'
 import PriorityControl from 'viewer/PriorityControl.jsx'
 import FlashViewer from 'viewer/FlashViewer.jsx';
@@ -34,9 +33,6 @@ class CardSetViewer extends Component {
    
 
     render() {
-        console.log(this.props)
-
-
 
         let cards = this.props.cards.filter(currElement => {
             return currElement.priority >= this.state.priorityStart 
@@ -47,7 +43,6 @@ class CardSetViewer extends Component {
         return(
         <div>
             <ControlStation updateRange={this.updateRange}/>
-
             <FlashViewer {...this.props} cards={cards}/>
 
 

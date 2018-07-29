@@ -40,12 +40,7 @@ class CardSetPage extends Component {
             })
 
 
-
-
-
             let newCards = Object.assign([...prev.cards], {[index]: newCard})
-
-            console.log(newCards)
 
 
             return {

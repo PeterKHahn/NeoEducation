@@ -13,6 +13,8 @@ class FlashViewer extends Component {
         }
 
         this.handleKeyPress = this.handleKeyPress.bind(this)
+
+        this.resetIndex = this.resetIndex.bind(this)
     }
 
     handleKeyPress(event) {
@@ -32,6 +34,12 @@ class FlashViewer extends Component {
 
       }
 
+      resetIndex() {
+          this.setState((prev, props) => ({
+            index: 0
+          }))
+      }
+
     
 
     // https://stackoverflow.com/questions/41693715/react-redux-what-is-the-canonical-way-to-bind-a-keypress-action-to-kick-off-a-r
@@ -44,9 +52,17 @@ class FlashViewer extends Component {
         document.removeEventListener('keydown', this.handleKeyPress);
      }
 
+     componentDidUpdate(prevProps) {
+
+
+         if(prevProps.cards.length != this.props.cards.length) {
+            this.resetIndex()
+         }
+
+     }
+
 
     render() {
-
 
         let cardE = <div></div>
 
@@ -61,10 +77,10 @@ class FlashViewer extends Component {
                     cl="flash-card"
                     term={card.term}
                     index={card.absIndex}
-
                     definition = {card.definition}
                     priority = {card.priority}
                     updateCard = {this.props.updateCard}
+                    resetIndex = {this.resetIndex}
                 />
             )
         }
@@ -80,8 +96,6 @@ class FlashViewer extends Component {
                     {cardE}
 
                 </div>
-
-
 
             </div>
 

@@ -57,8 +57,6 @@ class App extends Component {
 
     render() {
         return <MainContent {...this.props}/>
-
-
         
     }
 }

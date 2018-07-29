@@ -14,10 +14,7 @@ class PriorityBar extends Component {
     }
 
     onClick(newPriority) {
-        console.log(this.props)
-
         this.props.updateCard(this.props.index, this.props.term, this.props.definition, newPriority)
-        
     }
 
 
