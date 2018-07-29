@@ -190,6 +190,7 @@ class Server {
                             try {
                                 val resultCardSet = cardDatabase.retrieveCardSet(id, email)
                                 println("card set found!")
+                                println(resultCardSet.cards.size)
                                 call.respond(ApiResponse(true, RetrieveCardSetResponse(resultCardSet)))
 
 

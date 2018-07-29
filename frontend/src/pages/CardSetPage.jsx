@@ -67,8 +67,8 @@ class CardSetPage extends Component {
             <div>
                 <Header/>
                 <Switch>
-                    <Route path="/cardset/:id/edit" render = {(routeProps) => <CardSetViewer title={this.state.title} subject={this.state.subject}/>}/>
-                    <Route path="/cardset/:id/credit" component = {Tmp}/>
+                    <Route path="/cardset/:id/view" render = {(routeProps) => <CardSetViewer title={this.state.title} subject={this.state.subject}/>}/>
+                    <Route path="/cardset/:id/edit" component = {Tmp}/>
 
                 </Switch>
 

@@ -55,7 +55,7 @@ class SetPage extends Component {
 const CardSet = (props) => {
 
     return(
-        <Link className="link"to={"/cardset/" + props.id}>
+        <Link className="link"to={"/cardset/" + props.id + "/view"}>
             <div className="card-set-summary">
                 <div>title: {props.title}</div>
                 <div>subject: {props.subject}</div>

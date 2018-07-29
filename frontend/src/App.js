@@ -15,8 +15,8 @@ import {connect} from 'react-redux'
 
 class App extends Component {
 
-    componentWillMount() {
 
+    componentDidMount() {
         // https://stackoverflow.com/questions/30929679/react-fetch-data-in-server-before-render
 
         fetch("/has-credentials", {
@@ -42,9 +42,6 @@ class App extends Component {
             }
         })
 
-    }
-
-    componentDidMount() {
         window.gapi.load('auth2', () => {
             window.gapi.auth2.init({
                 client_id: '904281358251-rhgerstv3o3t53nal0jat706npmmler4.apps.googleusercontent.com',
