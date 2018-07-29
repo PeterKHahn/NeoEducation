@@ -12,6 +12,8 @@ class FlashViewer extends Component {
             index: 0
         }
 
+        
+
         this.handleKeyPress = this.handleKeyPress.bind(this)
 
         this.resetIndex = this.resetIndex.bind(this)
@@ -63,6 +65,7 @@ class FlashViewer extends Component {
 
 
     render() {
+
 
         let cardE = <div></div>
 

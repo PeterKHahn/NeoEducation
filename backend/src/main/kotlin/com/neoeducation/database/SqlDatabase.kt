@@ -89,33 +89,31 @@ class CardDatabase(name: String) {
     }
 
 
-    private fun insertOrUpdateCard(card: CardReceived): EntityID<Int> {
+    private fun insertCard(card: CardReceived): EntityID<Int> {
         return transaction {
 
-            if (card.validId()) {
 
-                val cardx = Card[card.id]
-                cardx.term = card.term
-                cardx.definition = card.definition
-                cardx.priority = card.priority
-
-                cardx.id // TODO does not deal with security
-
-
-            } else {
-
-                val cardx = Card.new {
-                    term = card.term
-                    definition = card.definition
-                    priority = card.priority
-                }
-                cardx.id
-
-
+            val cardx = Card.new {
+                term = card.term
+                definition = card.definition
+                priority = 1
             }
+            cardx.id
+
 
         }
 
+    }
+
+    private fun updateCard(card: UpdatedCardReceived): EntityID<Int> {
+        return transaction {
+            val cardx = Card[card.id]
+            cardx.term = card.term
+            cardx.definition = card.definition
+            cardx.priority = card.priority
+
+            cardx.id
+        }
     }
 
     /**
@@ -134,7 +132,6 @@ class CardDatabase(name: String) {
 
 
             val newCardSetId = cardSetx.id
-            
 
 
             // Insert into the User to CardSets associative table
@@ -147,7 +144,7 @@ class CardDatabase(name: String) {
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
 
-                val newCardId = insertOrUpdateCard(card)
+                val newCardId = insertCard(card)
 
                 CardSetsToCardsDb.insert {
                     it[cardSetId] = newCardSetId

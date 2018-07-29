@@ -39,6 +39,9 @@ class CardSetViewer extends Component {
             && currElement.priority <= this.state.priorityEnd
         })
 
+        console.log(this.props.cards)
+
+
         
         return(
         <div>

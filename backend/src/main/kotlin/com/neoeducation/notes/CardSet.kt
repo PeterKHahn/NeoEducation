@@ -7,11 +7,10 @@ data class CardSetData(val id: Int, val title: String, val subject: String, val 
 
 
 data class CardSetReceived(val title: String = "[Untitled]", val subject: String = "", val cards: List<CardReceived>)
-data class CardReceived(val id: Int = -1, val term: String, val definition: String, val priority: Int = 1) {
-    fun validId(): Boolean {
-        return id < 0
-    }
-}
+
+data class CardReceived(val term: String, val definition: String)
+
+data class UpdatedCardReceived(val id: Int, val term: String, val definition: String, val priority: Int)
 
 
 data class CardSetRequest(val id: Int)
