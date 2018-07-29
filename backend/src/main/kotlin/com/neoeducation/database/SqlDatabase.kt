@@ -28,15 +28,24 @@ object CardsDb : IntIdTable() {
 class Card(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Card>(CardsDb)
 
-    val term by CardsDb.term
-    val definition by CardsDb.definition
-    val priority by CardsDb.priority
+    var term by CardsDb.term
+    var definition by CardsDb.definition
+    var priority by CardsDb.priority
 }
 
 object CardSetsDb : IntIdTable() {
     val title = varchar("title", 255)
     val subject = varchar("subject", 255)
     val email = varchar("email", 255)
+}
+
+class CardSet(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<CardSet>(CardSetsDb)
+
+    var title by CardSetsDb.title
+    var subject by CardSetsDb.subject
+    var email by CardSetsDb.email
+
 }
 
 object CardSetsToCardsDb : Table() {
@@ -80,34 +89,30 @@ class CardDatabase(name: String) {
     }
 
 
-    private fun insertCard(card: CardReceived): Int {
+    private fun insertOrUpdateCard(card: CardReceived): EntityID<Int> {
         return transaction {
 
             if (card.validId()) {
-                val x = CardsDb.update({ CardsDb.id eq card.id }) {
-                    it[term] = card.term
-                    it[definition] = card.definition
-                    it[priority] = card.priority
 
+                val cardx = Card[card.id]
+                cardx.term = card.term
+                cardx.definition = card.definition
+                cardx.priority = card.priority
 
-                }
-
-
-                card.id // TODO does not deal with security
+                cardx.id // TODO does not deal with security
 
 
             } else {
-                val newId = CardsDb.insertAndGetId {
-                    it[term] = card.term
-                    it[definition] = card.definition
-                    it[priority] = 1
 
+                val cardx = Card.new {
+                    term = card.term
+                    definition = card.definition
+                    priority = card.priority
                 }
-                newId.value
+                cardx.id
 
 
             }
-
 
         }
 
@@ -119,12 +124,17 @@ class CardDatabase(name: String) {
     fun insertCardSet(email: String, cardSet: CardSetReceived): Int {
         return transaction {
 
-            // Inserts the CardSet into the database
-            val newCardSetId = CardSetsDb.insertAndGetId {
-                it[title] = cardSet.title
-                it[subject] = cardSet.subject
-                it[CardSetsDb.email] = email
+            val cardSetx = CardSet.new {
+                title = cardSet.title
+                subject = cardSet.subject
+                this.email = email
             }
+
+            // Inserts the CardSet into the database
+
+
+            val newCardSetId = cardSetx.id
+            
 
 
             // Insert into the User to CardSets associative table
@@ -137,7 +147,7 @@ class CardDatabase(name: String) {
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
 
-                val newCardId = insertCard(card)
+                val newCardId = insertOrUpdateCard(card)
 
                 CardSetsToCardsDb.insert {
                     it[cardSetId] = newCardSetId
