@@ -7,6 +7,7 @@ class WorkPanel extends Component {
     constructor(props) {
         super(props)
 
+        this.onFinish = this.props.onFinish.bind(this)
 
 
         this.updateTitle = this.updateTitle.bind(this)
@@ -155,7 +156,6 @@ class CreatePanel extends WorkPanel {
 
     constructor(props) {
         super(props)
-        this.onFinish = this.onFinish.bind(this)
     }
     onFinish() {
         let cardset = this.state.cards
