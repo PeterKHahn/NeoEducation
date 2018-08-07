@@ -23,6 +23,7 @@ object CardsDb : IntIdTable() {
     val term = text("term")
     val definition = text("definition")
     val priority = integer("priority")
+    val owner = text("email")
 }
 
 class Card(id: EntityID<Int>) : IntEntity(id) {
@@ -31,6 +32,7 @@ class Card(id: EntityID<Int>) : IntEntity(id) {
     var term by CardsDb.term
     var definition by CardsDb.definition
     var priority by CardsDb.priority
+    var owner: String by CardsDb.owner
 }
 
 object CardSetsDb : IntIdTable() {
@@ -89,14 +91,14 @@ class CardDatabase(name: String) {
     }
 
 
-    private fun insertCard(card: CardReceived): EntityID<Int> {
+    private fun insertCard(card: CardReceived, email: String): EntityID<Int> {
         return transaction {
-
 
             val cardx = Card.new {
                 term = card.term
                 definition = card.definition
                 priority = 1
+                owner = email
             }
             cardx.id
 
@@ -105,14 +107,24 @@ class CardDatabase(name: String) {
 
     }
 
-    private fun updateCard(card: UpdatedCardReceived): EntityID<Int> {
+    private fun updateCard(card: UpdatedCardReceived, email: String): Boolean {
+
         return transaction {
             val cardx = Card[card.id]
-            cardx.term = card.term
-            cardx.definition = card.definition
-            cardx.priority = card.priority
 
-            cardx.id
+            if (cardx.owner == email) {
+
+                cardx.term = card.term
+                cardx.definition = card.definition
+                cardx.priority = card.priority
+
+                cardx.id
+
+                true
+            } else {
+                false
+            }
+
         }
     }
 
@@ -144,7 +156,7 @@ class CardDatabase(name: String) {
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
 
-                val newCardId = insertCard(card)
+                val newCardId = insertCard(card, email)
 
                 CardSetsToCardsDb.insert {
                     it[cardSetId] = newCardSetId
@@ -199,6 +211,34 @@ class CardDatabase(name: String) {
 
 
         }
+    }
+
+    fun updateCardSet(setId: Int, cardSet: UpdateCardSetReceived, email: String): Boolean {
+
+        return transaction {
+            logger.addLogger(StdOutSqlLogger)
+
+            val cardSetx = CardSet[setId]
+
+            if (cardSetx.email == email) {
+                cardSetx.subject = cardSet.subject
+                cardSetx.title = cardSet.title
+
+                // TODO update individual cards
+
+                cardSet.cards.forEach {
+                    // TODO call updateCard
+                }
+
+
+                true
+            } else {
+                false
+            }
+
+
+        }
+
     }
 
     /**
