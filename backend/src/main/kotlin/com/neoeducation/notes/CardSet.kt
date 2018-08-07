@@ -11,7 +11,11 @@ data class CardSetData(val id: Int, val title: String, val subject: String, val 
  */
 data class CardSetReceived(val title: String = "[Untitled]", val subject: String = "", val cards: List<CardReceived>)
 
-data class UpdateCardSetReceived(val id: Int, val title: String, val subject: String, val cards: List<UpdatedCardReceived>)
+data class UpdateCardSetReceived(val id: Int, val title: String, val subject: String, val cards: List<UpdatedCardReceived>) {
+    fun toCardSetReceived(): CardSetReceived {
+        return CardSetReceived(title, subject, cards.map { it.toCardReceived() })
+    }
+}
 
 
 data class CardReceived(val term: String, val definition: String)

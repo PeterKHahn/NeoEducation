@@ -74,6 +74,8 @@ object UsersToCardsDb : Table() {
     val cardId = entityId("card", CardsDb) references CardsDb.id
 }
 
+// TODO support deletion in database
+
 
 class CardDatabase(name: String) {
     init {
@@ -115,7 +117,7 @@ class CardDatabase(name: String) {
 
     }
 
-    private fun updateCard(card: UpdatedCardReceived, setId: EntityID<Int>, email: String): Boolean {
+    private fun updateCard(card: UpdatedCardReceived, setId: EntityID<Int>, email: String) {
 
         return transaction {
             val cardx = Card.findById(card.id)
@@ -127,14 +129,16 @@ class CardDatabase(name: String) {
                     cardx.definition = card.definition
                     cardx.priority = card.priority
 
-                    true
+
                 } else {
-                    false
+                    // Inserts the cord if we do not have permission
+                    insertCard(card.toCardReceived(), setId, email)
+
                 }
             } else {
                 // Inserts the cord if it is not found
                 insertCard(card.toCardReceived(), setId, email)
-                true
+
             }
 
 
@@ -208,8 +212,6 @@ class CardDatabase(name: String) {
                                 cardData
                             }
 
-
-
                     CardSetData(setId, cardSetRow[CardSetsDb.title], cardSetRow[CardSetsDb.subject], cards)
 
                 }
@@ -221,7 +223,7 @@ class CardDatabase(name: String) {
         }
     }
 
-    fun updateCardSet(setId: Int, cardSet: UpdateCardSetReceived, email: String): Boolean {
+    fun updateCardSet(setId: Int, cardSet: UpdateCardSetReceived, email: String) {
 
         return transaction {
             logger.addLogger(StdOutSqlLogger)
@@ -240,10 +242,10 @@ class CardDatabase(name: String) {
                 }
 
 
-                true
             } else {
-                // TODO think about whether it would be worth it to create a new set if they don't have permission
-                false
+                // If the card set does not belong to them, make a new one
+                insertCardSet(email, cardSet.toCardSetReceived())
+
             }
 
 
