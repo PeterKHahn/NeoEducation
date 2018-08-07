@@ -68,6 +68,7 @@ object UsersToCardSetDb : Table() {
     val cardSetId = entityId("cardSet", CardSetsDb) references CardSetsDb.id
 }
 
+// TODO unused, but eventually will be needed for individual card ownership/ permissions
 object UsersToCardsDb : Table() {
     val userEmail = varchar("email", 50) references UsersDb.email
     val cardId = entityId("card", CardsDb) references CardsDb.id
@@ -91,7 +92,10 @@ class CardDatabase(name: String) {
     }
 
 
-    private fun insertCard(card: CardReceived, email: String): EntityID<Int> {
+    /**
+     * Inserts a card into the database, along with a cardSet that it is associated with in the relational table.
+     */
+    private fun insertCard(card: CardReceived, cardSetId: EntityID<Int>, email: String) {
         return transaction {
 
             val cardx = Card.new {
@@ -100,30 +104,39 @@ class CardDatabase(name: String) {
                 priority = 1
                 owner = email
             }
-            cardx.id
 
+
+            CardSetsToCardsDb.insert {
+                it[this.cardSetId] = cardSetId
+                it[cardId] = cardx.id
+            }
 
         }
 
     }
 
-    private fun updateCard(card: UpdatedCardReceived, email: String): Boolean {
+    private fun updateCard(card: UpdatedCardReceived, setId: EntityID<Int>, email: String): Boolean {
 
         return transaction {
-            val cardx = Card[card.id]
+            val cardx = Card.findById(card.id)
 
-            if (cardx.owner == email) {
+            if (cardx != null) {
+                if (cardx.owner == email) {
 
-                cardx.term = card.term
-                cardx.definition = card.definition
-                cardx.priority = card.priority
+                    cardx.term = card.term
+                    cardx.definition = card.definition
+                    cardx.priority = card.priority
 
-                cardx.id
-
-                true
+                    true
+                } else {
+                    false
+                }
             } else {
-                false
+                // Inserts the cord if it is not found
+                insertCard(card.toCardReceived(), setId, email)
+                true
             }
+
 
         }
     }
@@ -156,13 +169,8 @@ class CardDatabase(name: String) {
             // Adds the elements into the associative table
             cardSet.cards.forEach { card ->
 
-                val newCardId = insertCard(card, email)
+                insertCard(card, newCardSetId, email)
 
-                CardSetsToCardsDb.insert {
-                    it[cardSetId] = newCardSetId
-                    it[cardId] = newCardId
-
-                }
             }
 
             newCardSetId.value
@@ -227,12 +235,14 @@ class CardDatabase(name: String) {
                 // TODO update individual cards
 
                 cardSet.cards.forEach {
-                    // TODO call updateCard
+                    updateCard(it, cardSetx.id, email)
+                    // TODO deal with deletion of cards, checking whether it's in the database
                 }
 
 
                 true
             } else {
+                // TODO think about whether it would be worth it to create a new set if they don't have permission
                 false
             }
 

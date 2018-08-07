@@ -16,7 +16,12 @@ data class UpdateCardSetReceived(val id: Int, val title: String, val subject: St
 
 data class CardReceived(val term: String, val definition: String)
 
-data class UpdatedCardReceived(val id: Int, val term: String, val definition: String, val priority: Int)
+data class UpdatedCardReceived(val id: Int, val term: String, val definition: String, val priority: Int) {
+    fun toCardReceived(): CardReceived {
+
+        return CardReceived(term, definition)
+    }
+}
 
 
 /**
