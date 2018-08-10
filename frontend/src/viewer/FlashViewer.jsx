@@ -12,8 +12,6 @@ class FlashViewer extends Component {
             index: 0
         }
 
-        
-
         this.handleKeyPress = this.handleKeyPress.bind(this)
 
         this.resetIndex = this.resetIndex.bind(this)

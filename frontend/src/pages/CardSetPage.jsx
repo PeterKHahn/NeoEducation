@@ -101,6 +101,7 @@ class CardSetPage extends Component {
     }
 
 
+
     render() {
         // this is how you get the id {this.props.match.params.id} 
 
@@ -114,12 +115,6 @@ class CardSetPage extends Component {
                 </Switch>
 
             </div>)
-    }
-}
-
-class Tmp extends Component {
-    render() {
-        return<div>hey</div>
     }
 }
 

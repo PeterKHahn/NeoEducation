@@ -23,7 +23,7 @@ object CardsDb : IntIdTable() {
     val term = text("term")
     val definition = text("definition")
     val priority = integer("priority")
-    val owner = text("email")
+    val owner = text("owner")
 }
 
 class Card(id: EntityID<Int>) : IntEntity(id) {
@@ -38,7 +38,7 @@ class Card(id: EntityID<Int>) : IntEntity(id) {
 object CardSetsDb : IntIdTable() {
     val title = varchar("title", 255)
     val subject = varchar("subject", 255)
-    val email = varchar("email", 255)
+    val owner = varchar("owner", 255)
 }
 
 class CardSet(id: EntityID<Int>) : IntEntity(id) {
@@ -46,7 +46,7 @@ class CardSet(id: EntityID<Int>) : IntEntity(id) {
 
     var title by CardSetsDb.title
     var subject by CardSetsDb.subject
-    var email by CardSetsDb.email
+    var owner by CardSetsDb.owner
 
 }
 
@@ -154,7 +154,7 @@ class CardDatabase(name: String) {
             val cardSetx = CardSet.new {
                 title = cardSet.title
                 subject = cardSet.subject
-                this.email = email
+                owner = email
             }
 
             // Inserts the CardSet into the database
@@ -196,7 +196,7 @@ class CardDatabase(name: String) {
 
             if (!cardSetQuery.empty()) {
                 val cardSetRow = cardSetQuery.first()
-                if (cardSetRow[CardSetsDb.email] != email) { // This particular if statement
+                if (cardSetRow[CardSetsDb.owner] != email) { // This particular if statement
                     // The user does not have access to this particular Card Set
                     throw InvalidCredentialsException()
 
@@ -230,11 +230,10 @@ class CardDatabase(name: String) {
 
             val cardSetx = CardSet[setId]
 
-            if (cardSetx.email == email) {
+            if (cardSetx.owner == email) {
                 cardSetx.subject = cardSet.subject
                 cardSetx.title = cardSet.title
 
-                // TODO update individual cards
 
                 cardSet.cards.forEach {
                     updateCard(it, cardSetx.id, email)
